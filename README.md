@@ -35,4 +35,4 @@ Open an issue or PR. Discussion on the architecture is welcome — the implement
 
 ## License
 
-TBD (likely MIT).
+[AGPL-3.0-or-later](LICENSE). Matches upstream Immich; derivative works must remain open-source.
