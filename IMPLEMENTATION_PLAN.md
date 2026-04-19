@@ -14,9 +14,14 @@ A small web app that connects to an existing Immich server and lets a logged-in 
 4. Toggle match mode: **AND (intersection)** (default) vs **OR (union)**.
 5. Click an asset → open a lightbox preview (thumbnail first, original on demand).
 6. Log in with **Immich email + password** (no separate user store).
-7. Deploy as a **single Docker image** parameterised by `IMMICH_URL`.
+7. **Selection state persisted in the URL** (`?tags=a,b&mode=and`) so views are shareable/bookmarkable.
+8. Deploy as a **single Docker image** parameterised by `IMMICH_URL`.
 
-Explicit non-goals for v1: editing tags/assets, replacing Immich's main UI, mobile-native shell.
+Target Immich version: **2.7.5** (latest stable at time of writing). The generated typed client is pinned to this version's OpenAPI spec; weekly CI regen keeps us in sync with upstream.
+
+Deployment assumption: **single user per deployment**. We do not multiplex multiple concurrent Immich accounts through one instance — users wanting that spin up another container.
+
+Explicit non-goals for v1: editing tags/assets, replacing Immich's main UI, mobile-native shell, multi-account support.
 
 ---
 
@@ -69,14 +74,14 @@ browser ──▶ SSR server (routes + API) ──▶ Immich API
 
 Assuming Option 2B, the SPA is a standalone bundle.
 
-| Dimension | Option F1: **React + Vite + TS** | Option F2: **SvelteKit (SPA mode)** | Option F3: **Vue 3 + Vite + TS** |
-|---|---|---|---|
-| Ecosystem size | huge | medium | large |
-| Bundle size (typical) | ~50–80 KB gz | ~15–30 KB gz | ~40–60 KB gz |
-| Learning curve for contributors | low | low–medium | low |
-| Component libs (tag chips, virtual lists, lightbox) | best-in-class (Radix, TanStack, PhotoSwipe bindings) | growing | good |
-| State mgmt for tag selection | Zustand or URL state | stores (built-in) | Pinia |
-| Data fetching | **TanStack Query** (caching, retries, stale-while-revalidate) | TanStack Query (svelte) or custom | TanStack Query (vue) |
+| Dimension                                           | Option F1: **React + Vite + TS**                              | Option F2: **SvelteKit (SPA mode)** | Option F3: **Vue 3 + Vite + TS** |
+| --------------------------------------------------- | ------------------------------------------------------------- | ----------------------------------- | -------------------------------- |
+| Ecosystem size                                      | huge                                                          | medium                              | large                            |
+| Bundle size (typical)                               | ~50–80 KB gz                                                  | ~15–30 KB gz                        | ~40–60 KB gz                     |
+| Learning curve for contributors                     | low                                                           | low–medium                          | low                              |
+| Component libs (tag chips, virtual lists, lightbox) | best-in-class (Radix, TanStack, PhotoSwipe bindings)          | growing                             | good                             |
+| State mgmt for tag selection                        | Zustand or URL state                                          | stores (built-in)                   | Pinia                            |
+| Data fetching                                       | **TanStack Query** (caching, retries, stale-while-revalidate) | TanStack Query (svelte) or custom   | TanStack Query (vue)             |
 
 **Recommendation: F1 (React + Vite + TS)** + **TanStack Query** + **Tailwind** + **Zustand** (tiny) for selection state + **react-photoswipe-gallery** for the lightbox. Rationale: richest library ecosystem for the specific widgets we need (virtualised tag tree, chip input, image gallery) and the lowest onboarding cost for outside contributors. Bundle size is not a bottleneck for an authenticated tool.
 
@@ -86,12 +91,12 @@ If we later discover we want SSR for public share links, we can migrate the same
 
 ## 4. Backend / proxy stack
 
-| Option | Pros | Cons |
-|---|---|---|
-| **B1: Node + Fastify (TS)** | same language as frontend; shared types via a `shared/` package; fast; tiny |  Node image adds ~40 MB to the final container |
-| B2: Go (chi/echo) | smallest runtime (~10 MB image), great concurrency | separate language, duplicated request/response types |
-| B3: Python FastAPI | easy, familiar | heaviest runtime; async story is fine but not a fit for a trivial proxy |
-| B4: Caddy / Nginx with only reverse-proxy config | zero code | can't hold session state or rewrite auth headers cleanly |
+| Option                                           | Pros                                                                        | Cons                                                                    |
+| ------------------------------------------------ | --------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| **B1: Node + Fastify (TS)**                      | same language as frontend; shared types via a `shared/` package; fast; tiny | Node image adds ~40 MB to the final container                           |
+| B2: Go (chi/echo)                                | smallest runtime (~10 MB image), great concurrency                          | separate language, duplicated request/response types                    |
+| B3: Python FastAPI                               | easy, familiar                                                              | heaviest runtime; async story is fine but not a fit for a trivial proxy |
+| B4: Caddy / Nginx with only reverse-proxy config | zero code                                                                   | can't hold session state or rewrite auth headers cleanly                |
 
 **Recommendation: B1 (Fastify + TS).** Enables sharing `types/immich.ts` with the frontend (generated from Immich's OpenAPI spec) and keeps the mental model in one language. Final image can still be ~80 MB on `node:22-alpine`.
 
@@ -124,15 +129,15 @@ Ship **A2 as the primary path**, with **A3 (API key)** hidden behind an "Advance
 
 Based on the OpenAPI spec (cross-check at `https://<immich>/api/docs`):
 
-| Endpoint | Purpose |
-|---|---|
-| `POST /api/auth/login` | exchange email+password for access token |
-| `POST /api/auth/logout` | server-side invalidation |
-| `GET  /api/users/me` | confirm session + show avatar/name |
-| `GET  /api/tags` | full tag list (includes `id`, `name`, `value`, `parentId`, `color`) |
-| `POST /api/search/metadata` | primary asset query; accepts `tagIds: string[]` (AND semantics on server) + pagination |
-| `GET  /api/assets/:id/thumbnail?size=preview` | thumbnail stream |
-| `GET  /api/assets/:id/original` | full-res download (lazy) |
+| Endpoint                                      | Purpose                                                                                |
+| --------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `POST /api/auth/login`                        | exchange email+password for access token                                               |
+| `POST /api/auth/logout`                       | server-side invalidation                                                               |
+| `GET  /api/users/me`                          | confirm session + show avatar/name                                                     |
+| `GET  /api/tags`                              | full tag list (includes `id`, `name`, `value`, `parentId`, `color`)                    |
+| `POST /api/search/metadata`                   | primary asset query; accepts `tagIds: string[]` (AND semantics on server) + pagination |
+| `GET  /api/assets/:id/thumbnail?size=preview` | thumbnail stream                                                                       |
+| `GET  /api/assets/:id/original`               | full-res download (lazy)                                                               |
 
 **AND vs OR tag logic.** `POST /api/search/metadata` applies AND across `tagIds`. For **OR** mode we either:
 - O1: issue N parallel requests (one per tag) and union the results client-side. Simple, works today.
@@ -171,14 +176,14 @@ Generate a TypeScript client from the upstream OpenAPI spec at build time (`open
 
 ### Runtime config (12-factor)
 
-| Env var | Default | Meaning |
-|---|---|---|
-| `IMMICH_URL` | *(required)* | Base URL of the Immich instance (e.g. `https://immich.example.com`) |
-| `PORT` | `8080` | Port to listen on |
-| `SESSION_SECRET` | *(required)* | HMAC key for signing the session cookie |
-| `COOKIE_SECURE` | `true` | Set to `false` for `http://` local dev |
-| `TAGS_CACHE_TTL_SECONDS` | `60` | In-memory cache for `/api/tags` |
-| `LOG_LEVEL` | `info` | Fastify log level |
+| Env var                  | Default      | Meaning                                                             |
+| ------------------------ | ------------ | ------------------------------------------------------------------- |
+| `IMMICH_URL`             | *(required)* | Base URL of the Immich instance (e.g. `https://immich.example.com`) |
+| `PORT`                   | `8080`       | Port to listen on                                                   |
+| `SESSION_SECRET`         | *(required)* | HMAC key for signing the session cookie                             |
+| `COOKIE_SECURE`          | `true`       | Set to `false` for `http://` local dev                              |
+| `TAGS_CACHE_TTL_SECONDS` | `60`         | In-memory cache for `/api/tags`                                     |
+| `LOG_LEVEL`              | `info`       | Fastify log level                                                   |
 
 ### Healthcheck
 
@@ -232,6 +237,7 @@ Monorepo via **pnpm workspaces** (recommendation P1). Alternatives: Turborepo (P
 
 **Phase 0 — Scaffolding (this PR adjacent)**
 - Workspace, TS configs, lint/format (ESLint + Prettier), pre-commit (husky + lint-staged).
+- `LICENSE` file (AGPL-3.0) + SPDX headers enforced via a lint rule.
 - Dockerfile stub that just runs "hello world" Fastify.
 
 **Phase 1 — Walking skeleton**
@@ -268,26 +274,28 @@ Monorepo via **pnpm workspaces** (recommendation P1). Alternatives: Turborepo (P
 
 ---
 
-## 12. Open questions (decide before Phase 1)
+## 12. Resolved decisions
 
-1. **Immich version floor.** Which minimum Immich version do we target? The `/api/tags` response shape has churned. Proposal: pin to the latest stable at start (`v1.x`) and document the tested range in the README.
-2. **OR-mode ceiling.** Is 10 tags fan-out acceptable, or should we ship without OR in v1 and wait for upstream?
-3. **License.** MIT vs AGPL. Immich itself is AGPL; staying MIT is fine for a separate client but worth a conscious call.
-4. **Multi-user support.** Is this always single-user-at-a-time per browser, or do we need to support multiple concurrent Immich accounts in one deployment? Current plan assumes the former.
-5. **Should we persist the user's selection in the URL?** Recommend yes (querystring `?tags=a,b&mode=and`) for shareability — trivial to implement, big UX win. Flagging so we don't forget in Phase 2.
+All five open questions have been decided — recorded here for traceability.
+
+1. **Immich version.** Target **v2.7.5** (latest stable). Pin the generated OpenAPI client to this version; weekly regen PR (see §11) surfaces upstream drift.
+2. **OR-mode ceiling.** Ship OR mode in v1 with a **hard cap of 10 tags** in the fan-out path. UI disables adding an 11th tag while OR is active with an inline hint.
+3. **License.** **AGPL-3.0-or-later.** Matches upstream Immich, keeps derivative works open. A `LICENSE` file is added as part of Phase 0 scaffolding; every source file gets a short SPDX header (`// SPDX-License-Identifier: AGPL-3.0-or-later`).
+4. **Multi-user support.** **Single user per deployment.** No concurrent-account multiplexing. Session store can be a single in-memory slot; no need for Redis/Postgres in v1.
+5. **URL-persisted selection.** **Yes** — `?tags=<id>,<id>&mode=and|or`. Implemented from Phase 2 onward so it's wired in from the first working build, not retrofitted.
 
 ---
 
 ## 13. Recommendation summary
 
-| Area | Choice |
-|---|---|
-| Architecture | SPA + thin Fastify proxy (2B) |
-| Frontend | React + Vite + TS + TanStack Query + Tailwind + Zustand |
-| Backend | Fastify + TS |
-| Auth | httpOnly cookie session (A2), API-key fallback (A3) |
-| Tag AND | server-side `tagIds` filter |
-| Tag OR | client-side fan-out + union (cap 10) |
-| Packaging | single multi-stage Docker image, multi-arch |
-| Monorepo | pnpm workspaces |
-| CI | GitHub Actions → GHCR |
+| Area         | Choice                                                  |
+| ------------ | ------------------------------------------------------- |
+| Architecture | SPA + thin Fastify proxy (2B)                           |
+| Frontend     | React + Vite + TS + TanStack Query + Tailwind + Zustand |
+| Backend      | Fastify + TS                                            |
+| Auth         | httpOnly cookie session (A2), API-key fallback (A3)     |
+| Tag AND      | server-side `tagIds` filter                             |
+| Tag OR       | client-side fan-out + union (cap 10)                    |
+| Packaging    | single multi-stage Docker image, multi-arch             |
+| Monorepo     | pnpm workspaces                                         |
+| CI           | GitHub Actions → GHCR                                   |
