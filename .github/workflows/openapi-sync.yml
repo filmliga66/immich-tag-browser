@@ -1,0 +1,60 @@
+name: Sync Immich OpenAPI types
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check workspace exists
+        id: guard
+        shell: bash
+        run: |
+          if [ -f package.json ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: pnpm/action-setup@v4
+        if: steps.guard.outputs.ready == 'true'
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        if: steps.guard.outputs.ready == 'true'
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        if: steps.guard.outputs.ready == 'true'
+        run: pnpm install --frozen-lockfile
+
+      - name: Regenerate typed client
+        if: steps.guard.outputs.ready == 'true'
+        run: pnpm --filter web run gen:api
+
+      - name: Open PR if drift detected
+        if: steps.guard.outputs.ready == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: chore/openapi-sync
+          commit-message: 'chore: resync Immich OpenAPI types'
+          title: 'chore: resync Immich OpenAPI types'
+          body: |
+            Automated regeneration of the Immich TypeScript client from the
+            upstream OpenAPI spec. Review the diff carefully — breaking shape
+            changes may require app-side adjustments.
+          labels: |
+            automated
+            dependencies

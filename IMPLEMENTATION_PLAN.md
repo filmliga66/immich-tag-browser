@@ -274,7 +274,93 @@ Monorepo via **pnpm workspaces** (recommendation P1). Alternatives: Turborepo (P
 
 ---
 
-## 12. Resolved decisions
+## 12. CI/CD pipelines
+
+Three GitHub Actions workflows, landed in Phase 0 as dormant shells (gated by `hashFiles(...)` so they no-op until the code exists) and progressively activated as each package appears.
+
+### 12.1 `ci.yml` — per-PR quality gate
+
+- **Triggers:** `pull_request`, `push: main`.
+- **Jobs:**
+  - `detect` — sets `has_pkg` output based on whether `package.json` exists (lets us land the workflow now, real checks activate once Phase 1 scaffolds the workspace).
+  - `build` (depends on detect) — pnpm install with frozen lockfile → `lint` → `typecheck` → `test` → `build`. Single matrix on `node:22`.
+- **Caching:** `actions/setup-node` with `cache: pnpm`.
+- **Permissions:** `contents: read` only.
+- **Required check** for branch protection on `main` once active.
+
+### 12.2 `release.yml` — container publishing
+
+- **Triggers:** `push: main` → `:main` + `:sha-<short>`; tags `v*` → `:vX.Y.Z`, `:vX.Y`, `:latest`.
+- **Build:** `docker/build-push-action` with `linux/amd64,linux/arm64` (arm64 matters for Raspberry Pi / Synology hosts).
+- **Registry:** GHCR, `ghcr.io/filmliga66/immich-tag-browser`.
+- **Auth:** `GITHUB_TOKEN` with `packages: write`.
+- **Cache:** `type=gha,mode=max` across runs.
+- **Gate:** `hashFiles('docker/Dockerfile') != ''` so it stays idle until the Dockerfile lands.
+
+### 12.3 `openapi-sync.yml` — upstream type drift guard
+
+- **Triggers:** weekly cron (Mon 06:00 UTC) + `workflow_dispatch`.
+- **Action:** regenerate the typed Immich client (`pnpm --filter web run gen:api`). If the working tree is dirty afterwards, open a PR with `peter-evans/create-pull-request`.
+- **Rationale:** keeps us honest about upstream breaking changes without forcing weekly manual work.
+
+### 12.4 Supporting config
+
+- **`dependabot.yml`** — weekly updates for `npm`, `github-actions`, `docker`; limit 5 open PRs on npm to keep noise low.
+- **Branch protection** on `main` (set manually in repo settings; documented here so it's reproducible):
+  - require `ci / build` to pass,
+  - require up-to-date branch,
+  - require signed commits (nice-to-have, not blocking),
+  - disallow force-push.
+- **CodeQL** (deferred, flagged as a TODO): auth-handling code path warrants it, but not while the repo is empty. Revisit at the end of Phase 1.
+
+### 12.5 Secrets & environments
+
+- `GITHUB_TOKEN` covers GHCR publishing — no extra secret needed for the release workflow.
+- Any future deploy-to-prod workflow would use a **GitHub Environment** (`production`) with required reviewers, not raw repo secrets.
+
+---
+
+## 13. Claude Code configuration
+
+Two small artefacts make this repo pleasant to work in with Claude Code (or other agentic tooling) without surprises.
+
+### 13.1 `CLAUDE.md` at the root
+
+A short, load-bearing file that Claude reads into every session. Contents:
+
+- **Project summary** and pointer to this plan.
+- **Stack + commands** (`pnpm dev`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`) so Claude uses the correct invocations.
+- **Conventions:** TS strict, SPDX headers, types generated from OpenAPI, TanStack Query for server state, Zustand for client state, URL for tag selection.
+- **Architectural guardrails:** proxy stays thin, single-user-per-deployment, OR-mode ≤ 10 tags, target Immich v2.7.5.
+- **PR checklist:** lint/typecheck/test green, Dockerfile builds if touched, env vars documented.
+
+Keep it under ~100 lines — CLAUDE.md is context that ships on every turn, so bloat is expensive.
+
+### 13.2 `.claude/settings.json` (committed, project-scoped)
+
+Pre-approves read-only inspection commands and routine package operations so contributors aren't drowning in permission prompts:
+
+- **Allow:** `pnpm *`, `git status/diff/log/show/branch/fetch`, `git add <path>` (specific, not wildcards to root), `git switch/stash/restore`, `gh pr/run/issue view|list|diff|checks`, `docker build`, `docker compose config`.
+- **Deny** (explicit, belt-and-braces):
+  - `git push --force*` — protected branches would catch it, but deny is cheaper than a push.
+  - `git reset --hard*`, `git clean -f*` — destructive local ops.
+  - `rm -rf *`, `docker system prune*`.
+- **Per-user overrides** belong in `.claude/settings.local.json` (git-ignored).
+- No hooks configured at the repo level in v1. If we later want auto-lint on save, we'll add a `PostToolUse` hook — but lint-staged already covers the commit path.
+
+### 13.3 Why not more?
+
+We deliberately skip:
+
+- **Custom subagents** — nothing specialized enough to justify the maintenance burden yet.
+- **Output styles / statuslines** — user preference, not project concern.
+- **MCP servers** — no external integrations (issue tracker, logs) wired up yet.
+
+These stay as open follow-ups once the app is running and actual workflow friction is visible.
+
+---
+
+## 14. Resolved decisions
 
 All five open questions have been decided — recorded here for traceability.
 
@@ -286,16 +372,19 @@ All five open questions have been decided — recorded here for traceability.
 
 ---
 
-## 13. Recommendation summary
+## 15. Recommendation summary
 
-| Area         | Choice                                                  |
-| ------------ | ------------------------------------------------------- |
-| Architecture | SPA + thin Fastify proxy (2B)                           |
-| Frontend     | React + Vite + TS + TanStack Query + Tailwind + Zustand |
-| Backend      | Fastify + TS                                            |
-| Auth         | httpOnly cookie session (A2), API-key fallback (A3)     |
-| Tag AND      | server-side `tagIds` filter                             |
-| Tag OR       | client-side fan-out + union (cap 10)                    |
-| Packaging    | single multi-stage Docker image, multi-arch             |
-| Monorepo     | pnpm workspaces                                         |
-| CI           | GitHub Actions → GHCR                                   |
+| Area              | Choice                                                                |
+| ----------------- | --------------------------------------------------------------------- |
+| Architecture      | SPA + thin Fastify proxy (2B)                                         |
+| Frontend          | React + Vite + TS + TanStack Query + Tailwind + Zustand               |
+| Backend           | Fastify + TS                                                          |
+| Auth              | httpOnly cookie session (A2), API-key fallback (A3)                   |
+| Tag AND           | server-side `tagIds` filter                                           |
+| Tag OR            | client-side fan-out + union (cap 10)                                  |
+| Packaging         | single multi-stage Docker image, multi-arch                           |
+| Monorepo          | pnpm workspaces                                                       |
+| CI                | `ci.yml` (lint/type/test/build) + `release.yml` (multi-arch → GHCR)   |
+| Type drift        | weekly `openapi-sync.yml` regenerates Immich client, opens PR on diff |
+| Dep updates       | Dependabot (npm + actions + docker), weekly                           |
+| Agent config      | `CLAUDE.md` + committed `.claude/settings.json` allowlist             |
