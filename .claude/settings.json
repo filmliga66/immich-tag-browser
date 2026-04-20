@@ -26,6 +26,7 @@
       "Bash(git pull --ff-only*)",
       "Bash(git add *)",
       "Bash(git restore *)",
+      "Bash(git push *)",
       "Bash(git stash*)",
       "Bash(git switch*)",
       "Bash(git checkout -b *)",
