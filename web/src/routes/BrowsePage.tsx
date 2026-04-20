@@ -20,7 +20,7 @@ export function BrowsePage(): JSX.Element {
     retry: false,
   });
 
-  const { tree, isLoading: tagsLoading } = useTagsQuery();
+  const { tree, isLoading: tagsLoading, isError: isTagsError } = useTagsQuery();
   const selectedIds = useSelectedTagIds();
   const selectedSet = new Set(selectedIds);
 
@@ -79,6 +79,10 @@ export function BrowsePage(): JSX.Element {
           <TagSearchBox value={tagQuery} onChange={setTagQuery} />
           {tagsLoading ? (
             <p className="px-3 py-2 text-sm text-gray-400">Loading tags…</p>
+          ) : isTagsError ? (
+            <p className="px-3 py-2 text-sm text-red-500">Failed to load tags.</p>
+          ) : tree.length === 0 ? (
+            <p className="px-3 py-2 text-sm text-gray-400">No tags found. Create tags in Immich first.</p>
           ) : (
             <TagTree
               nodes={tree}
