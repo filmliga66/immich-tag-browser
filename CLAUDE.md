@@ -13,7 +13,7 @@ Phase 0 scaffolding — workspace, CI, Docker stub, LICENSE. The working app doe
 - Monorepo: **pnpm workspaces** (`web/`, `server/`, `shared/`).
 - Frontend: React + Vite + TS + TanStack Query + Tailwind + Zustand.
 - Backend: Fastify + TS (thin reverse proxy to Immich; no business logic).
-- Tests: Vitest, React Testing Library, Playwright (e2e).
+- Tests: Vitest, React Testing Library. (No e2e in v1 — see plan §11.)
 - Container: multi-stage Docker on `node:24-alpine`, multi-arch (amd64 + arm64).
 
 ## Commands (once scaffolded)
@@ -26,7 +26,6 @@ pnpm --filter server dev      # proxy only
 pnpm lint                     # ESLint across workspace
 pnpm typecheck                # tsc --noEmit
 pnpm test                     # Vitest unit + component
-pnpm test:e2e                 # Playwright against dockerised Immich
 pnpm build                    # production builds of both packages
 pnpm --filter web run gen:api # regenerate typed Immich client
 ```

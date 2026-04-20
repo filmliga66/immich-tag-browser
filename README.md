@@ -37,12 +37,12 @@ The repo is in **Phase 0** (workspace + CI scaffolding). The commands below refl
 
 Versions match the CI pins in [.github/workflows/ci.yml](.github/workflows/ci.yml). Diverging locally causes lockfile churn.
 
-| Tool    | Version    | Notes                                                                       |
-| ------- | ---------- | --------------------------------------------------------------------------- |
-| Node.js | 24.x (LTS) | Active LTS. Node 22 works but is in maintenance-only until March 2026.      |
-| pnpm    | 10.x       | Install via Corepack (ships with Node) or winget.                           |
-| Git     | 2.40+      | `winget install Git.Git`                                                    |
-| Podman  | 5.x        | Used for local container builds and e2e tests (Docker Desktop alternative). |
+| Tool    | Version    | Notes                                                                                                  |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------ |
+| Node.js | 24.x (LTS) | Active LTS. Node 22 works but is in maintenance-only until March 2026.                                 |
+| pnpm    | 10.x       | Install via Corepack (ships with Node) or winget.                                                      |
+| Git     | 2.40+      | `winget install Git.Git`                                                                               |
+| Podman  | 5.x        | *Optional* — only needed if you want to test the Docker image locally. Docker Desktop works too.       |
 
 ### Windows setup (step by step)
 
@@ -72,13 +72,13 @@ corepack prepare pnpm@10 --activate
 pnpm --version   # 10.x
 ```
 
-**3. Install Podman Desktop** (GUI + CLI + auto-configures the WSL2 VM):
+**3. (Optional) Install Podman Desktop** — only if you want to build and run the container image locally. Skip this step if you just want to run the dev server.
 
 ```powershell
 winget install RedHat.Podman-Desktop
 ```
 
-After first launch, Podman Desktop provisions the `podman-machine-default` VM inside WSL2. That VM exposes a Docker-compatible socket automatically — Testcontainers and Playwright will find it without extra env vars.
+After first launch, Podman Desktop provisions the `podman-machine-default` VM inside WSL2. That VM exposes a Docker-compatible socket automatically.
 
 Verify:
 
@@ -87,13 +87,13 @@ podman --version       # 5.x
 podman run hello-world
 ```
 
-**4. (Optional) Alias `docker` → `podman`** so pasted `docker …` commands from upstream docs just work. Add to your PowerShell profile (`notepad $PROFILE`):
+If you prefer Docker Desktop, that works too. You can alias `docker` → `podman` in your PowerShell profile (`notepad $PROFILE`) if you want pasted `docker …` commands to resolve to Podman:
 
 ```powershell
 Set-Alias docker podman
 ```
 
-**5. Clone and bootstrap:**
+**4. Clone and bootstrap:**
 
 ```powershell
 git clone https://github.com/filmliga66/immich-tag-browser.git
@@ -107,8 +107,8 @@ Open <http://localhost:5173> and log in with your Immich credentials.
 
 ### Non-Windows quick notes
 
-- **macOS:** `brew install node@24 pnpm podman git`; then `podman machine init && podman machine start`.
-- **Linux:** use your distro's packages for Node 24 and Podman 5. Enable the user socket for Testcontainers: `systemctl --user enable --now podman.socket`, then `export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock`.
+- **macOS:** `brew install node@24 pnpm git`. Add `podman` and `podman machine init && podman machine start` only if you want to build the container image locally.
+- **Linux:** use your distro's packages for Node 24. Add Podman 5 only if you want to build the container image locally.
 
 ### Everyday commands
 
@@ -116,14 +116,13 @@ Open <http://localhost:5173> and log in with your Immich credentials.
 pnpm lint                      # ESLint across the workspace
 pnpm typecheck                 # tsc --noEmit
 pnpm test                      # Vitest unit + component
-pnpm test:e2e                  # Playwright — needs Podman running
 pnpm build                     # production builds of web + server
 pnpm --filter web run gen:api  # regenerate the typed Immich client
 ```
 
 ### Editor
 
-VS Code is the tested path. Recommended extensions: **ESLint**, **Prettier**, **Tailwind CSS IntelliSense**, **Playwright Test for VSCode**.
+VS Code is the tested path. Recommended extensions: **ESLint**, **Prettier**, **Tailwind CSS IntelliSense**.
 
 ## Contributing
 

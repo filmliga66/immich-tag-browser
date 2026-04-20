@@ -116,7 +116,8 @@ Immich exposes `POST /api/auth/login` returning `{ accessToken, userId, ... }`. 
 - Cookie TTL: **7 days** (`Max-Age=604800`). Rationale: Immich v2.7.5 sets its own `immich_access_token` cookie with `Max-Age` of 400 days regardless of real session state (session expiry is tracked server-side), so mirroring that value is meaningless. A fixed local TTL keeps the cookie's lifetime bounded; the authoritative expiry signal remains a 401 from Immich, not the local clock.
 - Logout: proxy clears cookie + calls Immich `POST /api/auth/logout` so the underlying Immich session is invalidated too.
 - 401 from Immich → proxy clears cookie, client redirects to `/login`. This is the authoritative expiry signal; we do not pre-emptively expire based on our cookie's local clock.
-- CSRF: `SameSite=Lax` defends passive requests but does **not** cover top-level `POST`/`PUT`/`DELETE` to `/api/*`. The proxy rejects any mutating request whose `Origin` header does not match the server's own origin (or is absent). Login itself is also gated by the same `Origin` check, since the cookie-to-be-set does not yet exist at request time. `SameSite=Lax` is chosen over `Strict` so shareable URLs (§1.7) and links from email/chat land logged-in.
+- CSRF: `SameSite=Lax` defends passive requests but does **not** cover top-level `POST`/`PUT`/`DELETE` to `/api/*`. The proxy rejects any mutating request whose `Origin` header does not match the server's own origin (or is absent). Login itself is also gated by the same `Origin` check, since the cookie-to-be-set does not yet exist at request time. `SameSite=Lax` is chosen over `Strict` so shareable URLs (§1.6) and links from email/chat land logged-in.
+- Post-login return URL: the login page accepts a `?redirect=<path>` parameter. The server (and the client before it submits) **requires the value to be a same-origin relative path** — it must start with `/`, must not start with `//` or `/\\`, and must not contain a scheme or host. Anything else is ignored and the user lands at `/`. No absolute URLs, no protocol-relative URLs, no open-redirect gadget.
 
 ### Recommendation
 
@@ -200,6 +201,15 @@ The asset grid issues many concurrent `GET /api/assets/:id/thumbnail` requests. 
 - Resolve `IMMICH_URL` **once at startup** and cache the origin. Every outbound proxy call targets that cached origin verbatim — never a host derived from the incoming request.
 - Normalise the incoming path (`URL` constructor, reject `..` segments post-normalisation) and require it to match `^/api/` before forwarding.
 - Refuse loopback / link-local / RFC1918 destinations unless `ALLOW_PRIVATE_IMMICH=true`. Re-check on DNS rebind by pinning the resolved IP for the request's lifetime.
+- **Never log request/response `Authorization` or `Cookie` headers.** Fastify's default logger is configured with a `serializers.req`/`serializers.res` that redacts both, so proxy error pages and stack traces can't leak the upstream bearer token.
+
+### Runtime version-drift guard
+
+Because we track Immich `main` (§1), the typed client baked into the container can run ahead of — or behind — the Immich server it talks to. To surface this early rather than at the first 404 from a missing field:
+
+- The build embeds the git short SHA of the OpenAPI spec used to generate the client (`IMMICH_SPEC_SHA` baked in at build time).
+- On startup, the proxy calls `GET /server/version` on `IMMICH_URL` once and logs both the spec SHA and the live server's version.
+- If the server's `major.minor` is older than the commit date of the baked-in spec by more than ~6 weeks, log a `warn`-level "Immich server may be older than the API types we were built against" message. No hard fail — self-hosters are free to run a behind-tip deployment and accept the risk.
 
 ### Healthcheck
 
@@ -274,7 +284,6 @@ Monorepo via **pnpm workspaces** (recommendation P1). Alternatives: Turborepo (P
 - Lightbox + "Open in Immich" link.
 - Infinite scroll + virtualisation.
 - Dark mode.
-- Basic e2e test (Playwright) against a test Immich container.
 
 **Phase 4 — Nice-to-haves (post-v1)**
 - OIDC passthrough.
@@ -288,8 +297,8 @@ Monorepo via **pnpm workspaces** (recommendation P1). Alternatives: Turborepo (P
 
 - **Unit**: Vitest in both `web/` and `server/`.
 - **Component**: React Testing Library for the tag tree and chip bar.
-- **Integration**: Playwright smoke test against a disposable Immich via `docker compose` in CI (gated behind a `e2e` workflow to keep PR CI fast).
 - **Contract**: regenerate Immich types from upstream `main`'s OpenAPI on a weekly schedule; PR opens automatically if the types shift.
+- **End-to-end**: deliberately out of scope for v1. Immich's first-boot registration flow and the lack of a committed seed-data fixture make a reliable Playwright suite a meaningful investment that the v1 feature set does not justify. Revisit when the app stabilises.
 
 ---
 
