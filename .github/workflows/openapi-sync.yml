@@ -46,7 +46,7 @@ jobs:
 
       - name: Open PR if drift detected
         if: steps.guard.outputs.ready == 'true'
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           branch: chore/openapi-sync
           commit-message: 'chore: resync Immich OpenAPI types'
