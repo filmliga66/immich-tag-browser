@@ -25,4 +25,9 @@ jobs:
         run: gh pr merge --auto --squash "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # GITHUB_TOKEN cannot merge PRs that touch .github/workflows/** — it
+          # lacks the `workflows` scope. Set WORKFLOW_TOKEN to a fine-grained
+          # PAT with "Contents: Write" + "Workflows: Write" on this repo to
+          # enable auto-merge for workflow-file bumps. Without it, those PRs
+          # require a manual merge — they will not auto-merge.
+          GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN != '' && secrets.WORKFLOW_TOKEN || secrets.GITHUB_TOKEN }}
