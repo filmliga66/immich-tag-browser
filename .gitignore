@@ -37,3 +37,7 @@ coverage/
 
 # Docker
 *.pid
+
+# Claude Code per-user overrides (team settings.json is committed)
+.claude/settings.local.json
+.claude/**/cache/

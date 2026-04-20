@@ -1,0 +1,41 @@
+# Syncs the live branch-protection ruleset on `main` to the committed spec at
+# .github/rulesets/main.json. Runs on manual dispatch and when that file changes.
+#
+# Requires repo secret RULESET_ADMIN_TOKEN — a fine-grained PAT with
+# "Administration: Write" on this repo. The default GITHUB_TOKEN cannot
+# manage repository rulesets.
+name: rulesets-apply
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/rulesets/**.json"
+
+permissions:
+  contents: read
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Sync main branch ruleset
+        env:
+          GH_TOKEN: ${{ secrets.RULESET_ADMIN_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+        run: |
+          set -euo pipefail
+          SPEC=.github/rulesets/main.json
+          NAME=$(jq -r .name "$SPEC")
+          EXISTING_ID=$(gh api "repos/$OWNER/$REPO/rulesets" --jq ".[] | select(.name==\"$NAME\") | .id" || true)
+          if [ -z "$EXISTING_ID" ]; then
+            echo "Creating ruleset '$NAME'..."
+            gh api --method POST "repos/$OWNER/$REPO/rulesets" --input "$SPEC"
+          else
+            echo "Updating ruleset '$NAME' (id=$EXISTING_ID)..."
+            gh api --method PUT "repos/$OWNER/$REPO/rulesets/$EXISTING_ID" --input "$SPEC"
+          fi
