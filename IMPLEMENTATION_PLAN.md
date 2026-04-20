@@ -115,9 +115,9 @@ Immich exposes `POST /api/auth/login` returning `{ accessToken, userId, ... }`. 
 
 ### Session lifecycle
 
-- Cookie TTL: 7 days, rolling. Refresh on every authenticated request.
-- Logout: proxy clears cookie + (optionally) calls Immich `POST /api/auth/logout`.
-- 401 from Immich → proxy clears cookie, client redirects to `/login`.
+- Cookie TTL: mirror Immich's own session. On login, read the `Max-Age` / `Expires` of the `immich_access_token` cookie Immich sets on its `POST /api/auth/login` response, and set our signed session cookie with the same expiry. Rationale: users expect "stay logged in until Immich says otherwise" — hardcoding our own TTL can outlive or expire before Immich's real session and surprise the user. If Immich returns a session cookie without an explicit expiry (browser-session only), treat ours the same (no `Max-Age`).
+- Logout: proxy clears cookie + calls Immich `POST /api/auth/logout` so the underlying Immich session is invalidated too.
+- 401 from Immich → proxy clears cookie, client redirects to `/login`. This is the authoritative expiry signal; we do not pre-emptively expire based on our cookie's local clock.
 
 ### Recommendation
 
