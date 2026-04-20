@@ -10,14 +10,13 @@ A small web app that connects to an existing Immich server and lets a logged-in 
 
 1. See **all tags** (flat list + tree by `parentId`).
 2. **Search** tags incrementally by name.
-3. **Multi-select** tags and view only the assets that satisfy the selection.
-4. Toggle match mode: **AND (intersection)** (default) vs **OR (union)**.
-5. Click an asset → open a lightbox preview (thumbnail first, original on demand).
-6. Log in with **Immich email + password** (no separate user store).
-7. **Selection state persisted in the URL** (`?tags=a,b&mode=and`) so views are shareable/bookmarkable.
-8. Deploy as a **single Docker image** parameterised by `IMMICH_URL`.
+3. **Multi-select** tags and view only the assets that satisfy the selection (**AND / intersection**; selecting a parent tag implicitly includes all descendants — see §6).
+4. Click an asset → open a lightbox preview (thumbnail first, original on demand).
+5. Log in with **Immich email + password** (no separate user store).
+6. **Selection state persisted in the URL** (`?tags=a,b`) so views are shareable/bookmarkable.
+7. Deploy as a **single Docker image** parameterised by `IMMICH_URL`.
 
-Target Immich version: **2.7.5** (latest stable at time of writing). The generated typed client is pinned to this version's OpenAPI spec; weekly CI regen keeps us in sync with upstream.
+Target Immich version: **upstream `main`** (rolling). The generated typed client is regenerated weekly from `https://raw.githubusercontent.com/immich-app/immich/main/open-api/immich-openapi-specs.json`; a regen PR opens automatically when the spec drifts. No hard version pin — we track `main` and absorb breaking changes as they surface. Users running older Immich releases may encounter mismatches; the README calls out that the tag browser tracks current Immich `main`.
 
 Deployment assumption: **single user per deployment**. We do not multiplex multiple concurrent Immich accounts through one instance — users wanting that spin up another container.
 
@@ -109,42 +108,44 @@ Immich exposes `POST /api/auth/login` returning `{ accessToken, userId, ... }`. 
 ### Options
 
 - **A1 — Token in localStorage (client-side).** Rejected: XSS-exposed.
-- **A2 — Token in httpOnly cookie issued by our proxy.** Login form posts to `/auth/login` on the proxy, which forwards to Immich, extracts the token, and sets a `Set-Cookie: session=<signed>; HttpOnly; Secure; SameSite=Strict`. The proxy then injects `Authorization` on outbound Immich calls. **Recommended.**
-- **A3 — User-supplied API key** (created in Immich → Account Settings → API Keys). Simple, but adds manual setup and most users don't know this flow. Offer as a secondary option under "Advanced login" — nice for read-only kiosk deploys.
+- **A2 — Token in httpOnly cookie issued by our proxy.** Login form posts to `/auth/login` on the proxy, which forwards to Immich, reads `accessToken` from the JSON response body, and issues a `Set-Cookie: session=<signed>; HttpOnly; Secure; SameSite=Lax`. Immich itself sets three cookies on the login response (`immich_access_token` httpOnly, plus `immich_auth_type` and `immich_is_authenticated` non-httpOnly); the proxy **strips all `Set-Cookie` headers from Immich's response** before returning to the browser, so only our own signed cookie reaches the client. The proxy then injects `Authorization: Bearer` on outbound Immich calls. **Recommended.**
 - **A4 — OAuth / OIDC passthrough.** Immich supports OIDC. If the user's Immich is OIDC-backed, we'd redirect through the same IdP. Deferred to v2 — adds config surface (client id/secret, redirect URIs) that most self-hosters won't need.
 
 ### Session lifecycle
 
-- Cookie TTL: mirror Immich's own session. On login, read the `Max-Age` / `Expires` of the `immich_access_token` cookie Immich sets on its `POST /api/auth/login` response, and set our signed session cookie with the same expiry. Rationale: users expect "stay logged in until Immich says otherwise" — hardcoding our own TTL can outlive or expire before Immich's real session and surprise the user. If Immich returns a session cookie without an explicit expiry (browser-session only), treat ours the same (no `Max-Age`).
+- Cookie TTL: **7 days** (`Max-Age=604800`). Rationale: Immich v2.7.5 sets its own `immich_access_token` cookie with `Max-Age` of 400 days regardless of real session state (session expiry is tracked server-side), so mirroring that value is meaningless. A fixed local TTL keeps the cookie's lifetime bounded; the authoritative expiry signal remains a 401 from Immich, not the local clock.
 - Logout: proxy clears cookie + calls Immich `POST /api/auth/logout` so the underlying Immich session is invalidated too.
 - 401 from Immich → proxy clears cookie, client redirects to `/login`. This is the authoritative expiry signal; we do not pre-emptively expire based on our cookie's local clock.
+- CSRF: `SameSite=Lax` defends passive requests but does **not** cover top-level `POST`/`PUT`/`DELETE` to `/api/*`. The proxy rejects any mutating request whose `Origin` header does not match the server's own origin (or is absent). Login itself is also gated by the same `Origin` check, since the cookie-to-be-set does not yet exist at request time. `SameSite=Lax` is chosen over `Strict` so shareable URLs (§1.7) and links from email/chat land logged-in.
 
 ### Recommendation
 
-Ship **A2 as the primary path**, with **A3 (API key)** hidden behind an "Advanced" toggle. Leave A4 as a clearly documented follow-up.
+Ship **A2 as the only v1 path.** Leave A4 (OIDC) as a clearly documented follow-up. A3 (user-supplied API key) was considered and cut: Immich API keys don't expire and don't have a logout semantics, which would require a second auth code path the v1 scope does not justify.
 
 ---
 
 ## 6. Immich API surface we need
 
-Based on the OpenAPI spec (cross-check at `https://<immich>/api/docs`):
+Based on the OpenAPI spec from Immich `main` (cross-check at `https://<immich>/api/docs`; authoritative source is `https://raw.githubusercontent.com/immich-app/immich/main/open-api/immich-openapi-specs.json`):
 
-| Endpoint                                      | Purpose                                                                                |
-| --------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `POST /api/auth/login`                        | exchange email+password for access token                                               |
-| `POST /api/auth/logout`                       | server-side invalidation                                                               |
-| `GET  /api/users/me`                          | confirm session + show avatar/name                                                     |
-| `GET  /api/tags`                              | full tag list (includes `id`, `name`, `value`, `parentId`, `color`)                    |
-| `POST /api/search/metadata`                   | primary asset query; accepts `tagIds: string[]` (AND semantics on server) + pagination |
-| `GET  /api/assets/:id/thumbnail?size=preview` | thumbnail stream                                                                       |
-| `GET  /api/assets/:id/original`               | full-res download (lazy)                                                               |
+| Endpoint                                      | Purpose                                                                                                |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `POST /api/auth/login`                        | exchange email+password for access token                                                               |
+| `POST /api/auth/logout`                       | server-side invalidation                                                                               |
+| `GET  /api/users/me`                          | confirm session + show avatar/name                                                                     |
+| `GET  /api/tags`                              | full tag list (includes `id`, `name`, `value`, `parentId`, `color`)                                    |
+| `POST /api/search/metadata`                   | primary asset query; accepts `tagIds: string[]` (AND-of-descendants semantics, see below) + pagination |
+| `GET  /api/assets/:id/thumbnail?size=preview` | thumbnail stream                                                                                       |
+| `GET  /api/assets/:id/original`               | full-res download (lazy)                                                                               |
 
-**AND vs OR tag logic.** `POST /api/search/metadata` applies AND across `tagIds`. For **OR** mode we either:
-- O1: issue N parallel requests (one per tag) and union the results client-side. Simple, works today.
-- O2: use `POST /api/search/smart` with a composed query. More flexible but heavier.
-- O3: ask upstream to add a `tagMatch: "any"` flag. Out of scope for v1.
+**Tag match semantics.** `POST /api/search/metadata` applies AND across `tagIds`, and each ID is expanded through `tag_closure` so a parent matches any of its descendants. Concretely: selecting `["Animals"]` returns assets tagged `Animals`, `Animals/Dog`, `Animals/Cat`, etc.; selecting `["Animals", "2024"]` returns assets that carry *some* descendant of `Animals` **and** *some* descendant of `2024`. Only AND is supported in v1 — OR mode was cut because client-side union of N paginated, date-sorted streams produces globally-wrong ordering, and the complexity isn't worth it for this release.
 
-**Recommend O1** for v1 with a cap (e.g. only allow OR across ≤10 tags to bound request fan-out).
+**Shift-click on a parent tag (UX interaction with descendant expansion).** Three options:
+- T1: Shift-click adds each descendant as an individual chip (AND across siblings = intersection). Restrictive and rarely what the user wants.
+- T2: Shift-click is a no-op because selecting the parent already implicitly covers all descendants via server-side closure expansion.
+- T3: Shift-click swaps the parent chip for all descendants wrapped in a single "any of these" group. Requires client-side grouping + is a disguised OR — same complexity cost we just rejected.
+
+**Recommend T2** for v1: the parent chip is the canonical way to say "anything under this branch." Shift-click is reserved for a future UX iteration once the AND-of-descendants behaviour is validated in practice.
 
 ### Typed client
 
@@ -154,12 +155,20 @@ Generate a TypeScript client from the upstream OpenAPI spec at build time (`open
 
 ## 7. UX sketch
 
-- **Left rail** (resizable): tag tree with search box at top. Click a tag = toggle select. Shift-click a parent = select all descendants. Selected tags appear as removable **chips** above the result grid.
+- **Left rail** (resizable): tag tree with search box at top. Click a tag = toggle select. Selecting a parent implicitly covers all descendants (server-side closure expansion — see §6). Selected tags appear as removable **chips** above the result grid.
 - **Center**: virtualised asset grid (e.g. `react-virtuoso` + CSS grid). Infinite scroll via TanStack Query's `useInfiniteQuery`.
-- **Top bar**: AND/OR toggle, sort (date desc default), user menu (logout).
+- **Top bar**: sort (date desc default), user menu (logout). No AND/OR toggle — v1 is AND-only (§6).
 - **Lightbox**: PhotoSwipe; arrow-key navigation; "Open in Immich" deep link.
 - **Empty states**: "No tags yet — create some in Immich" with a link.
 - **Accessibility**: keyboard-navigable tag tree, focus-visible styling, `aria-selected` on chips.
+
+### Thumbnail traffic
+
+The asset grid issues many concurrent `GET /api/assets/:id/thumbnail` requests. To keep the Fastify event loop and memory under control:
+
+- The proxy uses **streaming pass-through** (`reply.from()` / `pipeline`) for `/api/assets/*/thumbnail` and `/api/assets/*/original` — response bodies are piped, never buffered.
+- Upstream response headers `Content-Type`, `Content-Length`, `ETag`, and `Cache-Control` are forwarded verbatim so the browser can cache thumbnails; Immich already emits long-lived `Cache-Control` for immutable asset bytes.
+- No proxy-side thumbnail cache in v1. The browser HTTP cache plus the TanStack Query key cache are enough for typical library sizes; revisit if we see measured pressure.
 
 ---
 
@@ -176,18 +185,28 @@ Generate a TypeScript client from the upstream OpenAPI spec at build time (`open
 
 ### Runtime config (12-factor)
 
-| Env var                  | Default      | Meaning                                                             |
-| ------------------------ | ------------ | ------------------------------------------------------------------- |
-| `IMMICH_URL`             | *(required)* | Base URL of the Immich instance (e.g. `https://immich.example.com`) |
-| `PORT`                   | `8080`       | Port to listen on                                                   |
-| `SESSION_SECRET`         | *(required)* | HMAC key for signing the session cookie                             |
-| `COOKIE_SECURE`          | `true`       | Set to `false` for `http://` local dev                              |
-| `TAGS_CACHE_TTL_SECONDS` | `60`         | In-memory cache for `/api/tags`                                     |
-| `LOG_LEVEL`              | `info`       | Fastify log level                                                   |
+| Env var                  | Default      | Meaning                                                                                                                                                  |
+| ------------------------ | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `IMMICH_URL`             | *(required)* | Base URL of the Immich instance (e.g. `https://immich.example.com`)                                                                                      |
+| `PORT`                   | `8080`       | Port to listen on                                                                                                                                        |
+| `SESSION_SECRET`         | *(required)* | HMAC key for signing the session cookie                                                                                                                  |
+| `COOKIE_SECURE`          | `true`       | Set to `false` for `http://` local dev                                                                                                                   |
+| `TAGS_CACHE_TTL_SECONDS` | `60`         | In-memory cache for `/api/tags`                                                                                                                          |
+| `LOG_LEVEL`              | `info`       | Fastify log level                                                                                                                                        |
+| `ALLOW_PRIVATE_IMMICH`   | `false`      | When `false`, refuse startup if `IMMICH_URL` resolves to loopback, link-local, or RFC1918 addresses. Flip to `true` for LAN / docker-network deployments. |
+
+### Proxy hardening (SSRF)
+
+- Resolve `IMMICH_URL` **once at startup** and cache the origin. Every outbound proxy call targets that cached origin verbatim — never a host derived from the incoming request.
+- Normalise the incoming path (`URL` constructor, reject `..` segments post-normalisation) and require it to match `^/api/` before forwarding.
+- Refuse loopback / link-local / RFC1918 destinations unless `ALLOW_PRIVATE_IMMICH=true`. Re-check on DNS rebind by pinning the resolved IP for the request's lifetime.
 
 ### Healthcheck
 
-`GET /healthz` → `200 OK` when process is up **and** reachable-check of `IMMICH_URL/api/server/ping` succeeded within the last 30 s.
+Two separate endpoints so transient Immich outages don't trigger container restarts:
+
+- `GET /healthz` — **liveness only.** Always returns `200 OK` while the Fastify event loop is responsive. No outbound calls. This is the endpoint orchestrators (Docker, K8s, Traefik) use to decide whether to restart the container.
+- `GET /readyz` — **readiness.** `200 OK` when a cached probe of `IMMICH_URL/api/server/ping` (refreshed every 30 s in the background) most recently succeeded; `503` otherwise. Load balancers use this to pull traffic without killing the pod.
 
 ### CI / publishing
 
@@ -239,6 +258,7 @@ Monorepo via **pnpm workspaces** (recommendation P1). Alternatives: Turborepo (P
 - Workspace, TS configs, lint/format (ESLint + Prettier), pre-commit (husky + lint-staged).
 - `LICENSE` file (AGPL-3.0) + SPDX headers enforced via a lint rule.
 - Dockerfile stub that just runs "hello world" Fastify.
+- `.env.example` at repo root listing every env var from §8 (`IMMICH_URL`, `SESSION_SECRET`, `ALLOW_PRIVATE_IMMICH`, …) with placeholder values. Referenced by README's bootstrap step; contributors `cp .env.example .env` and fill in.
 
 **Phase 1 — Walking skeleton**
 - Proxy: `/auth/login`, cookie session, generic `/api/*` passthrough.
@@ -248,10 +268,9 @@ Monorepo via **pnpm workspaces** (recommendation P1). Alternatives: Turborepo (P
 **Phase 2 — Tag browser**
 - `GET /api/tags` viewer with tree + search.
 - Selection state + chip bar.
-- Result grid with thumbnails (AND mode).
+- Result grid with thumbnails (AND match — the only mode in v1).
 
 **Phase 3 — Polish**
-- OR mode toggle (fan-out + union).
 - Lightbox + "Open in Immich" link.
 - Infinite scroll + virtualisation.
 - Dark mode.
@@ -270,7 +289,7 @@ Monorepo via **pnpm workspaces** (recommendation P1). Alternatives: Turborepo (P
 - **Unit**: Vitest in both `web/` and `server/`.
 - **Component**: React Testing Library for the tag tree and chip bar.
 - **Integration**: Playwright smoke test against a disposable Immich via `docker compose` in CI (gated behind a `e2e` workflow to keep PR CI fast).
-- **Contract**: regenerate Immich types from upstream OpenAPI on a weekly schedule; PR opens automatically if the types shift.
+- **Contract**: regenerate Immich types from upstream `main`'s OpenAPI on a weekly schedule; PR opens automatically if the types shift.
 
 ---
 
@@ -300,17 +319,17 @@ Three GitHub Actions workflows, landed in Phase 0 as dormant shells (gated by `h
 ### 12.3 `openapi-sync.yml` — upstream type drift guard
 
 - **Triggers:** weekly cron (Mon 06:00 UTC) + `workflow_dispatch`.
+- **Source:** `https://raw.githubusercontent.com/immich-app/immich/main/open-api/immich-openapi-specs.json` — we track Immich `main` rather than a pinned release tag.
 - **Action:** regenerate the typed Immich client (`pnpm --filter web run gen:api`). If the working tree is dirty afterwards, open a PR with `peter-evans/create-pull-request`.
-- **Rationale:** keeps us honest about upstream breaking changes without forcing weekly manual work.
+- **Rationale:** keeps us honest about upstream breaking changes without forcing weekly manual work. Chasing `main` means types change more often than they would against a tagged release, but the plan's goal is to stay current with Immich, not to support a fleet of legacy versions.
 
 ### 12.4 Supporting config
 
 - **`dependabot.yml`** — weekly updates for `npm`, `github-actions`, `docker`; limit 5 open PRs on npm to keep noise low.
-- **Branch protection** on `main` (set manually in repo settings; documented here so it's reproducible):
-  - require `ci / build` to pass,
-  - require up-to-date branch,
-  - require signed commits (nice-to-have, not blocking),
-  - disallow force-push.
+- **Branch protection** on `main` — expressed as a committed GitHub repository ruleset rather than clicked-in settings, so the rules are reviewable and reproducible.
+  - `.github/rulesets/main.json` holds the ruleset definition (JSON schema per [GitHub's Rulesets API](https://docs.github.com/en/rest/repos/rules)).
+  - A small workflow (`rulesets-apply.yml`, `workflow_dispatch` + on-push changes to that file) calls `POST/PUT /repos/{owner}/{repo}/rulesets` via `gh api` to sync the live ruleset to the committed spec. Requires a PAT / fine-grained token with `Administration: Write` stored as `RULESET_ADMIN_TOKEN` (the default `GITHUB_TOKEN` cannot manage rulesets).
+  - Rules enforced: require `ci / build` to pass, require up-to-date branch, require signed commits (nice-to-have, not blocking), disallow force-push, disallow deletion of `main`.
 - **CodeQL** (deferred, flagged as a TODO): auth-handling code path warrants it, but not while the repo is empty. Revisit at the end of Phase 1.
 
 ### 12.5 Secrets & environments
@@ -331,7 +350,7 @@ A short, load-bearing file that Claude reads into every session. Contents:
 - **Project summary** and pointer to this plan.
 - **Stack + commands** (`pnpm dev`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`) so Claude uses the correct invocations.
 - **Conventions:** TS strict, SPDX headers, types generated from OpenAPI, TanStack Query for server state, Zustand for client state, URL for tag selection.
-- **Architectural guardrails:** proxy stays thin, single-user-per-deployment, OR-mode ≤ 10 tags, target Immich v2.7.5.
+- **Architectural guardrails:** proxy stays thin, single-user-per-deployment, AND-only tag matching, track Immich `main`.
 - **PR checklist:** lint/typecheck/test green, Dockerfile builds if touched, env vars documented.
 
 Keep it under ~100 lines — CLAUDE.md is context that ships on every turn, so bloat is expensive.
@@ -364,11 +383,11 @@ These stay as open follow-ups once the app is running and actual workflow fricti
 
 All five open questions have been decided — recorded here for traceability.
 
-1. **Immich version.** Target **v2.7.5** (latest stable). Pin the generated OpenAPI client to this version; weekly regen PR (see §11) surfaces upstream drift.
-2. **OR-mode ceiling.** Ship OR mode in v1 with a **hard cap of 10 tags** in the fan-out path. UI disables adding an 11th tag while OR is active with an inline hint.
+1. **Immich version.** Track **upstream `main`**, not a pinned release. The generated OpenAPI client is regenerated weekly against `immich-app/immich@main`; the resulting PR (see §12.3) is how we absorb upstream changes. Users pinned to an older Immich release may encounter shape mismatches — documented as a known trade-off, not a supported configuration.
+2. **Tag match semantics.** **AND-only in v1** (intersection). Each tag ID is server-side-expanded through `tag_closure`, so selecting a parent matches any descendant — see §6. OR mode was considered and cut: client-side union of N paginated, date-sorted streams produces globally-wrong ordering, and the complexity is not justified for v1. Revisit only if upstream Immich adds a native `tagMatch: "any"` flag.
 3. **License.** **AGPL-3.0-or-later.** Matches upstream Immich, keeps derivative works open. A `LICENSE` file is added as part of Phase 0 scaffolding; every source file gets a short SPDX header (`// SPDX-License-Identifier: AGPL-3.0-or-later`).
-4. **Multi-user support.** **Single user per deployment.** No concurrent-account multiplexing. Session store can be a single in-memory slot; no need for Redis/Postgres in v1.
-5. **URL-persisted selection.** **Yes** — `?tags=<id>,<id>&mode=and|or`. Implemented from Phase 2 onward so it's wired in from the first working build, not retrofitted.
+4. **Multi-user support.** **Single user per deployment.** No concurrent-account multiplexing. Sessions are **stateless**: the Immich bearer token rides inside the signed cookie payload, so there is no server-side session store — no Redis, no Postgres, no in-memory slot that would log the user out on restart.
+5. **URL-persisted selection.** **Yes** — `?tags=<id>,<id>`. No `mode` param (AND is the only mode — decision 2). Implemented from Phase 2 onward so it's wired in from the first working build, not retrofitted.
 
 ---
 
@@ -379,9 +398,8 @@ All five open questions have been decided — recorded here for traceability.
 | Architecture      | SPA + thin Fastify proxy (2B)                                         |
 | Frontend          | React + Vite + TS + TanStack Query + Tailwind + Zustand               |
 | Backend           | Fastify + TS                                                          |
-| Auth              | httpOnly cookie session (A2), API-key fallback (A3)                   |
-| Tag AND           | server-side `tagIds` filter                                           |
-| Tag OR            | client-side fan-out + union (cap 10)                                  |
+| Auth              | httpOnly cookie session (A2) only; OIDC deferred, API-key cut         |
+| Tag matching      | AND only (server-side `tagIds` with closure expansion); no OR in v1   |
 | Packaging         | single multi-stage Docker image, multi-arch                           |
 | Monorepo          | pnpm workspaces                                                       |
 | CI                | `ci.yml` (lint/type/test/build) + `release.yml` (multi-arch → GHCR)   |

@@ -36,18 +36,19 @@ pnpm --filter web run gen:api # regenerate typed Immich client
 - **TypeScript strict everywhere.** No implicit `any`; no `as any` except at FFI boundaries with a one-line comment explaining why.
 - **SPDX header** on every source file: `// SPDX-License-Identifier: AGPL-3.0-or-later`.
 - **Types first.** The Immich client is generated — never hand-type a response shape. If a type is missing, regen before working around it.
-- **Proxy stays thin.** `server/` routes either forward to Immich, set/clear the session cookie, or emit `/healthz`. No tag aggregation, no filtering — the SPA owns UX logic.
+- **Proxy stays thin.** `server/` routes either forward to Immich, set/clear the session cookie, or emit `/healthz` + `/readyz`. No tag aggregation, no filtering — the SPA owns UX logic.
 - **Server state** via TanStack Query. No `useEffect` + `fetch`.
 - **Client state** via Zustand. Keep stores small and feature-local.
-- **URL is the source of truth** for tag selection (`?tags=<id>,<id>&mode=and|or`). Read/write via `useSearchParams`; don't duplicate into a store.
+- **URL is the source of truth** for tag selection (`?tags=<id>,<id>`). AND-only, no `mode` param. Read/write via `useSearchParams`; don't duplicate into a store.
 - **Commits:** Conventional Commits (`feat:`, `fix:`, `chore:`, `docs:`). One concern per PR.
 - **Secrets** never in the repo. Required env vars are listed in [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) §8.
 
 ## Architectural guardrails
 
-- Target Immich **v2.7.5**. A weekly CI job (`openapi-sync.yml`) surfaces upstream drift.
-- OR-mode capped at **10 tags** in the fan-out path (plan §6). UI disables the 11th selection while OR is active.
+- Track Immich **upstream `main`** (not a pinned release). A weekly CI job (`openapi-sync.yml`) regenerates the typed client from `immich-app/immich@main`.
+- **AND-only tag matching.** Selecting a parent tag implicitly covers all descendants (server-side closure expansion — plan §6). No OR mode in v1.
 - **Single user per deployment.** Do not add code paths for multiplexing concurrent Immich accounts — users wanting that spin up another container.
+- **Stateless sessions.** The Immich bearer token rides inside the signed cookie payload; no Redis/in-memory session store.
 - **AGPL-3.0-or-later.** Derivative works stay open.
 
 ## Before opening a PR
