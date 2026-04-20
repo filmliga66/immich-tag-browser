@@ -98,7 +98,7 @@ If we later discover we want SSR for public share links, we can migrate the same
 | B3: Python FastAPI                               | easy, familiar                                                              | heaviest runtime; async story is fine but not a fit for a trivial proxy |
 | B4: Caddy / Nginx with only reverse-proxy config | zero code                                                                   | can't hold session state or rewrite auth headers cleanly                |
 
-**Recommendation: B1 (Fastify + TS).** Enables sharing `types/immich.ts` with the frontend (generated from Immich's OpenAPI spec) and keeps the mental model in one language. Final image can still be ~80 MB on `node:22-alpine`.
+**Recommendation: B1 (Fastify + TS).** Enables sharing `types/immich.ts` with the frontend (generated from Immich's OpenAPI spec) and keeps the mental model in one language. Final image can still be ~80 MB on `node:24-alpine`.
 
 ---
 
@@ -168,8 +168,8 @@ Generate a TypeScript client from the upstream OpenAPI spec at build time (`open
 ### Options
 
 - **D1 — Single image, multi-stage build** (recommended)
-  1. `node:22-alpine` stage A → `pnpm build` produces `web/dist`.
-  2. `node:22-alpine` stage B → installs only runtime deps for the proxy, copies `web/dist` to be served as static.
+  1. `node:24-alpine` stage A → `pnpm build` produces `web/dist`.
+  2. `node:24-alpine` stage B → installs only runtime deps for the proxy, copies `web/dist` to be served as static.
   3. Final image runs Fastify on `:8080`, serving `/` statically and proxying `/api/*`.
   - Final size target: **< 120 MB**.
 - **D2 — Two images** (web + proxy behind Nginx). More flexible, adds compose complexity. Not worth it for v1.
@@ -283,7 +283,7 @@ Three GitHub Actions workflows, landed in Phase 0 as dormant shells (gated by `h
 - **Triggers:** `pull_request`, `push: main`.
 - **Jobs:**
   - `detect` — sets `has_pkg` output based on whether `package.json` exists (lets us land the workflow now, real checks activate once Phase 1 scaffolds the workspace).
-  - `build` (depends on detect) — pnpm install with frozen lockfile → `lint` → `typecheck` → `test` → `build`. Single matrix on `node:22`.
+  - `build` (depends on detect) — pnpm install with frozen lockfile → `lint` → `typecheck` → `test` → `build`. Single matrix on `node:24`.
 - **Caching:** `actions/setup-node` with `cache: pnpm`.
 - **Permissions:** `contents: read` only.
 - **Required check** for branch protection on `main` once active.

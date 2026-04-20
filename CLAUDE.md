@@ -14,7 +14,7 @@ Phase 0 scaffolding — workspace, CI, Docker stub, LICENSE. The working app doe
 - Frontend: React + Vite + TS + TanStack Query + Tailwind + Zustand.
 - Backend: Fastify + TS (thin reverse proxy to Immich; no business logic).
 - Tests: Vitest, React Testing Library, Playwright (e2e).
-- Container: multi-stage Docker on `node:22-alpine`, multi-arch (amd64 + arm64).
+- Container: multi-stage Docker on `node:24-alpine`, multi-arch (amd64 + arm64).
 
 ## Commands (once scaffolded)
 
