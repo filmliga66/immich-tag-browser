@@ -64,9 +64,12 @@ export interface Config {
   port: number;
   sessionSecret: string;
   cookieSecure: boolean;
+  scheme: 'http' | 'https';
   tagsCacheTtlSeconds: number;
   logLevel: string;
   allowPrivateImmich: boolean;
+  /** Extra origins beyond host-reflection (e.g. Vite dev server). */
+  extraAllowedOrigins: Set<string>;
 }
 
 export async function loadConfig(): Promise<Config> {
@@ -79,15 +82,31 @@ export async function loadConfig(): Promise<Config> {
     throw new Error('SESSION_SECRET has not been changed from the placeholder — set a real secret');
   }
 
+  const port = parseInt(env('PORT', '8080'), 10);
+  const cookieSecure = envBool('COOKIE_SECURE', true);
+  const scheme = cookieSecure ? 'https' : 'http';
+
+  // ALLOWED_ORIGINS: comma-separated extra origins beyond host-reflection.
+  // Only needed when the browser-facing origin differs from the Host header
+  // (e.g. Vite dev server on :5173 proxying to the server on :8080).
+  const extraAllowedOrigins = new Set(
+    (process.env['ALLOWED_ORIGINS'] ?? '')
+      .split(',')
+      .map((o) => o.trim())
+      .filter(Boolean),
+  );
+
   return {
     immichUrl,
     immichOrigin: immichUrl.origin,
-    port: parseInt(env('PORT', '8080'), 10),
+    port,
     sessionSecret,
-    cookieSecure: envBool('COOKIE_SECURE', true),
+    cookieSecure,
+    scheme,
     tagsCacheTtlSeconds: parseInt(env('TAGS_CACHE_TTL_SECONDS', '60'), 10),
     logLevel: env('LOG_LEVEL', 'info'),
     allowPrivateImmich: allowPrivate,
+    extraAllowedOrigins,
   };
 }
 

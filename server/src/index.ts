@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { existsSync } from 'node:fs';
 import { fetch } from 'undici';
 import Fastify from 'fastify';
 import fastifyCookie from '@fastify/cookie';
@@ -40,32 +41,30 @@ async function main(): Promise<void> {
   await fastify.register(fastifyCookie);
 
   // Origin-check middleware for all mutating routes
-  const ownOrigin = `http${config.cookieSecure ? 's' : ''}://localhost:${config.port}`;
-  registerOriginCheck(fastify, ownOrigin);
+  registerOriginCheck(fastify, config.scheme, config.extraAllowedOrigins);
 
   // Register route handlers
   await authRoutes(fastify, config);
   await proxyRoutes(fastify, config);
   await healthRoutes(fastify, config);
 
-  // Serve the SPA static files in production (web/dist is copied here by Docker)
+  // Serve the SPA static files when web/dist is present (production / after build)
   const staticPath = path.resolve(__dirname, '../../web/dist');
-  try {
+  if (existsSync(staticPath)) {
     await fastify.register(fastifyStatic, {
       root: staticPath,
       prefix: '/',
-      decorateReply: false,
     });
 
-    // SPA fallback — serve index.html for all unmatched GET routes
+    // SPA fallback — all unmatched GET routes return index.html
     fastify.setNotFoundHandler(async (request, reply) => {
       if (request.method === 'GET') {
         return reply.sendFile('index.html');
       }
       return reply.status(404).send({ error: 'Not found' });
     });
-  } catch {
-    fastify.log.info('web/dist not found — running in API-only mode (dev)');
+  } else {
+    fastify.log.info('web/dist not found — running in API-only mode (pnpm dev)');
     fastify.setNotFoundHandler(async (_request, reply) => {
       return reply.status(404).send({ error: 'Not found' });
     });
