@@ -36,14 +36,14 @@ export function ChipBar({ labelFor }: ChipBarProps): JSX.Element {
       {selectedIds.map((id) => (
         <span
           key={id}
-          className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-3 py-0.5 text-sm font-medium text-blue-800"
+          className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-3 py-0.5 text-sm font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-200"
         >
           {labelFor(id)}
           <button
             type="button"
             aria-label={`Remove tag ${labelFor(id)}`}
             onClick={() => removeTag(id)}
-            className="ml-0.5 rounded-full hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+            className="ml-0.5 rounded-full hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:hover:bg-blue-800"
           >
             ✕
           </button>

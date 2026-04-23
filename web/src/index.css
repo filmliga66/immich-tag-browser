@@ -1,2 +1,5 @@
 /* SPDX-License-Identifier: AGPL-3.0-or-later */
 @import "tailwindcss";
+
+/* Enable class-based dark mode for Tailwind 4 */
+@custom-variant dark (&:where(.dark, .dark *));

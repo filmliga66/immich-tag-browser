@@ -60,7 +60,9 @@ function TagNodeItem({ node, selectedIds, query, depth, onToggle, listRef }: Tag
       style={{ paddingLeft: `${depth * 1.25}rem` }}
       className={clsx(
         'flex cursor-pointer select-none items-center gap-1.5 rounded px-2 py-1 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500',
-        isSelected ? 'bg-blue-100 font-semibold text-blue-800' : 'hover:bg-gray-100 text-gray-800',
+        isSelected
+          ? 'bg-blue-100 font-semibold text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+          : 'text-gray-800 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800',
       )}
     >
       <span className="truncate">{node.name}</span>

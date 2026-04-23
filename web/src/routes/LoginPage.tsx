@@ -44,40 +44,46 @@ export function LoginPage(): JSX.Element {
   }
 
   return (
-    <main style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
-      <form onSubmit={(e) => void handleSubmit(e)} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', minWidth: '280px' }}>
-        <h1 style={{ margin: 0 }}>Immich Tag Browser</h1>
-        {error && (
-          <p role="alert" style={{ color: 'red', margin: 0 }}>
-            {error}
-          </p>
-        )}
-        <label>
-          Email
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            autoComplete="email"
-            style={{ display: 'block', width: '100%' }}
-          />
-        </label>
-        <label>
-          Password
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            autoComplete="current-password"
-            style={{ display: 'block', width: '100%' }}
-          />
-        </label>
-        <button type="submit" disabled={loading}>
-          {loading ? 'Logging in…' : 'Log in'}
-        </button>
-      </form>
+    <main className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-950">
+      <div className="w-full max-w-sm rounded-lg border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+        <h1 className="mb-6 text-xl font-semibold text-gray-900 dark:text-gray-100">Immich Tag Browser</h1>
+        <form onSubmit={(e) => void handleSubmit(e)} className="flex flex-col gap-4">
+          {error && (
+            <p role="alert" className="text-sm text-red-500">
+              {error}
+            </p>
+          )}
+          <label className="flex flex-col gap-1">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Email</span>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+              className="rounded border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+            />
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Password</span>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              autoComplete="current-password"
+              className="rounded border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+            />
+          </label>
+          <button
+            type="submit"
+            disabled={loading}
+            className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 dark:bg-blue-500 dark:hover:bg-blue-400"
+          >
+            {loading ? 'Logging in…' : 'Log in'}
+          </button>
+        </form>
+      </div>
     </main>
   );
 }

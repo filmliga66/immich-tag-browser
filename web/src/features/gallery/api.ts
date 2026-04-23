@@ -4,6 +4,10 @@ export interface AssetMetadata {
   id: string;
   type: string;
   originalFileName: string;
+  exifInfo?: {
+    exifImageWidth?: number | null;
+    exifImageHeight?: number | null;
+  } | null;
 }
 
 export interface SearchMetadataResponse {

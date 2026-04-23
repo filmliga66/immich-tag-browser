@@ -8,6 +8,7 @@ import fastifyCookie from '@fastify/cookie';
 import fastifyStatic from '@fastify/static';
 import { loadConfig } from './config.js';
 import { authRoutes } from './routes/auth.js';
+import { configRoutes } from './routes/config.js';
 import { proxyRoutes } from './routes/proxy.js';
 import { healthRoutes } from './routes/health.js';
 import { registerOriginCheck } from './middleware/originCheck.js';
@@ -45,6 +46,7 @@ async function main(): Promise<void> {
 
   // Register route handlers
   await authRoutes(fastify, config);
+  await configRoutes(fastify, config);
   await proxyRoutes(fastify, config);
   await healthRoutes(fastify, config);
 
