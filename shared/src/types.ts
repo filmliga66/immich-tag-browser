@@ -24,3 +24,31 @@ export interface SessionPayload {
   userId: string;
   userEmail: string;
 }
+
+/** Immich tag entity (subset we consume). */
+export interface ImmichTag {
+  id: string;
+  name: string;
+  value: string;
+  parentId: string | null;
+  color?: string | null;
+}
+
+/** Immich asset entity (subset we render). */
+export interface ImmichAsset {
+  id: string;
+  type: string;
+  originalFileName: string;
+  fileCreatedAt: string;
+  thumbhash?: string | null;
+}
+
+/** Response from POST /api/search/metadata. */
+export interface ImmichSearchResponse {
+  assets: {
+    items: ImmichAsset[];
+    count: number;
+    total: number;
+    nextPage: string | null;
+  };
+}
