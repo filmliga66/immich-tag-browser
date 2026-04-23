@@ -6,7 +6,7 @@ import { fetchMe, logout } from '../features/auth/api.js';
 import { useTagsQuery } from '../features/tags/useTagsQuery.js';
 import { TagSearchBox } from '../features/tags/TagSearchBox.js';
 import { TagTree } from '../features/tags/TagTree.js';
-import { ChipBar, useSelectedTagIds } from '../features/tags/ChipBar.js';
+import { ChipBar, useSelectedTagValues } from '../features/tags/ChipBar.js';
 import { AssetGrid } from '../features/gallery/AssetGrid.js';
 import { useTheme } from '../features/theme/useTheme.js';
 
@@ -19,7 +19,7 @@ function ThemeToggle(): JSX.Element {
       type="button"
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      className="rounded bg-gray-100 px-3 py-1 text-sm hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+      className="rounded-md border border-immich-gray-200 bg-immich-bg px-3 py-1 text-sm text-immich-gray-700 hover:bg-immich-gray-100 dark:border-immich-gray-700 dark:bg-immich-gray-900 dark:text-immich-gray-300 dark:hover:bg-immich-gray-800"
     >
       {isDark ? 'Light' : 'Dark'}
     </button>
@@ -38,30 +38,36 @@ export function BrowsePage(): JSX.Element {
   });
 
   const { tree, isLoading: tagsLoading, isError: isTagsError } = useTagsQuery();
-  const selectedIds = useSelectedTagIds();
-  const selectedSet = new Set(selectedIds);
+  const selectedValues = useSelectedTagValues();
+  const selectedValueSet = new Set(selectedValues);
 
-  const tagNameMap = new Map<string, string>();
+  const valueToIdMap = new Map<string, string>();
+  const valueToNameMap = new Map<string, string>();
   function indexTree(nodes: typeof tree): void {
     for (const node of nodes) {
-      tagNameMap.set(node.id, node.name);
+      valueToIdMap.set(node.value, node.id);
+      valueToNameMap.set(node.value, node.name);
       indexTree(node.children);
     }
   }
   indexTree(tree);
 
-  function toggleTag(id: string): void {
-    const next = new Set(selectedSet);
-    if (next.has(id)) {
-      next.delete(id);
+  const selectedTagIds = selectedValues
+    .map((value) => valueToIdMap.get(value))
+    .filter((id): id is string => id !== undefined);
+
+  function toggleTag(value: string): void {
+    const next = new Set(selectedValueSet);
+    if (next.has(value)) {
+      next.delete(value);
     } else {
-      next.add(id);
+      next.add(value);
     }
     const updated = new URLSearchParams(params);
     if (next.size === 0) {
       updated.delete('tags');
     } else {
-      updated.set('tags', [...next].join(','));
+      updated.set('tags', [...next].map(encodeURIComponent).join(','));
     }
     setParams(updated, { replace: true });
   }
@@ -72,17 +78,17 @@ export function BrowsePage(): JSX.Element {
   }
 
   return (
-    <div className="flex h-screen flex-col bg-gray-50 dark:bg-gray-950">
+    <div className="flex h-screen flex-col bg-immich-gray-50 text-immich-fg dark:bg-immich-dark-bg dark:text-immich-dark-fg">
       {/* Top bar */}
-      <header className="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-2 shadow-sm dark:border-gray-700 dark:bg-gray-900">
-        <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Immich Tag Browser</h1>
+      <header className="flex items-center justify-between border-b border-immich-gray-200 bg-immich-bg px-4 py-2 shadow-sm dark:border-immich-gray-800 dark:bg-immich-gray-900">
+        <h1 className="text-lg font-semibold text-immich-gray-900 dark:text-immich-dark-fg">Immich Tag Browser</h1>
         <div className="flex items-center gap-3">
-          {user && <span className="text-sm text-gray-600 dark:text-gray-400">{user.name}</span>}
+          {user && <span className="text-sm text-immich-gray-500 dark:text-immich-gray-300">{user.name}</span>}
           <ThemeToggle />
           <button
             type="button"
             onClick={() => void handleLogout()}
-            className="rounded bg-gray-100 px-3 py-1 text-sm hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+            className="rounded-md border border-immich-gray-200 bg-immich-bg px-3 py-1 text-sm text-immich-gray-700 hover:bg-immich-gray-100 dark:border-immich-gray-700 dark:bg-immich-gray-900 dark:text-immich-gray-300 dark:hover:bg-immich-gray-800"
           >
             Log out
           </button>
@@ -92,18 +98,18 @@ export function BrowsePage(): JSX.Element {
       {/* Body */}
       <div className="flex min-h-0 flex-1">
         {/* Left rail */}
-        <aside className="flex w-60 flex-shrink-0 flex-col border-r border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+        <aside className="flex w-64 flex-shrink-0 flex-col border-r border-immich-gray-200 bg-immich-bg dark:border-immich-gray-800 dark:bg-immich-gray-900">
           <TagSearchBox value={tagQuery} onChange={setTagQuery} />
           {tagsLoading ? (
-            <p className="px-3 py-2 text-sm text-gray-400 dark:text-gray-500">Loading tags…</p>
+            <p className="px-3 py-2 text-sm text-immich-gray-400 dark:text-immich-gray-400">Loading tags…</p>
           ) : isTagsError ? (
             <p className="px-3 py-2 text-sm text-red-500">Failed to load tags.</p>
           ) : tree.length === 0 ? (
-            <p className="px-3 py-2 text-sm text-gray-400 dark:text-gray-500">No tags found. Create tags in Immich first.</p>
+            <p className="px-3 py-2 text-sm text-immich-gray-400 dark:text-immich-gray-400">No tags found. Create tags in Immich first.</p>
           ) : (
             <TagTree
               nodes={tree}
-              selectedIds={selectedSet}
+              selectedValues={selectedValueSet}
               query={tagQuery}
               onToggle={toggleTag}
             />
@@ -111,9 +117,9 @@ export function BrowsePage(): JSX.Element {
         </aside>
 
         {/* Main content */}
-        <main className="flex min-h-0 flex-1 flex-col overflow-y-auto dark:bg-gray-950">
-          <ChipBar labelFor={(id) => tagNameMap.get(id) ?? id} />
-          <AssetGrid tagIds={selectedIds} />
+        <main className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-immich-gray-50 dark:bg-immich-dark-bg">
+          <ChipBar labelFor={(value) => valueToNameMap.get(value) ?? value} />
+          <AssetGrid tagIds={selectedTagIds} />
         </main>
       </div>
     </div>
