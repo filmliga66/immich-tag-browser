@@ -5,13 +5,14 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes, useSearchParams } from 'react-router-dom';
 import { ChipBar } from './ChipBar.js';
 
-function labelFor(id: string): string {
+function labelFor(value: string): string {
   const names: Record<string, string> = {
-    tag1: 'Animals',
-    tag2: 'Places',
-    tag3: 'People',
+    'animals': 'Animals',
+    'places': 'Places',
+    'people': 'People',
+    'travel/europe': 'Europe',
   };
-  return names[id] ?? id;
+  return names[value] ?? value;
 }
 
 /** Renders ChipBar inside a MemoryRouter with the given initial search string. */
@@ -50,25 +51,25 @@ describe('ChipBar', () => {
     expect(screen.queryByRole('button')).toBeNull();
   });
 
-  it('renders chips for each selected tag id', () => {
-    renderWithSearch('?tags=tag1,tag2');
+  it('renders chips for each selected tag value', () => {
+    renderWithSearch('?tags=animals,places');
     expect(screen.getByText('Animals')).toBeInTheDocument();
     expect(screen.getByText('Places')).toBeInTheDocument();
   });
 
   it('removes a tag from the URL when its chip remove button is clicked', async () => {
     const user = userEvent.setup();
-    const { getSearch } = renderWithSearch('?tags=tag1,tag2');
+    const { getSearch } = renderWithSearch('?tags=animals,places');
 
     await user.click(screen.getByRole('button', { name: /Remove tag Animals/i }));
 
-    expect(getSearch()).toContain('tag2');
-    expect(getSearch()).not.toContain('tag1');
+    expect(getSearch()).toContain('places');
+    expect(getSearch()).not.toContain('animals');
   });
 
   it('removes the tags param entirely when the last chip is removed', async () => {
     const user = userEvent.setup();
-    const { getSearch } = renderWithSearch('?tags=tag1');
+    const { getSearch } = renderWithSearch('?tags=animals');
 
     await user.click(screen.getByRole('button', { name: /Remove tag Animals/i }));
 
@@ -76,9 +77,14 @@ describe('ChipBar', () => {
   });
 
   it('renders chips for three selected tags', () => {
-    renderWithSearch('?tags=tag1,tag2,tag3');
+    renderWithSearch('?tags=animals,places,people');
     expect(screen.getByText('Animals')).toBeInTheDocument();
     expect(screen.getByText('Places')).toBeInTheDocument();
     expect(screen.getByText('People')).toBeInTheDocument();
+  });
+
+  it('decodes encoded tag values from the URL', () => {
+    renderWithSearch('?tags=travel%2Feurope');
+    expect(screen.getByText('Europe')).toBeInTheDocument();
   });
 });
