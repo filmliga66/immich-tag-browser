@@ -52,12 +52,16 @@ export async function proxyRoutes(
 
     const hasBody = request.method !== 'GET' && request.method !== 'HEAD';
 
+    // Fastify parses JSON bodies into objects; re-serialize so undici sends valid JSON.
+    let proxyBody: string | undefined;
+    if (hasBody && request.body !== undefined && request.body !== null) {
+      proxyBody = typeof request.body === 'string' ? request.body : JSON.stringify(request.body);
+    }
+
     const upstream = await fetch(upstreamUrl.toString(), {
       method: request.method,
       headers: forwardHeaders,
-      // undici accepts a Readable as body; cast needed because @types/undici doesn't expose
-      // the full body union that undici actually accepts at runtime.
-      body: hasBody ? (request.body as string | null | undefined) : undefined,
+      body: proxyBody,
       duplex: hasBody ? 'half' : undefined,
     } as Parameters<typeof fetch>[1]);
 
