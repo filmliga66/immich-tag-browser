@@ -15,20 +15,25 @@ export interface AssetsQueryResult {
 }
 
 /**
- * Fetches assets matching ALL selected tags (AND semantics).
+ * Fetches assets matching the tag selection with grouped OR/AND semantics:
+ *   - Tags in the same group (same parent) are combined with OR
+ *   - Groups are combined with AND
  *
- * Immich's /api/search/metadata accepts tagIds with OR semantics, so for a
- * single tag we use paginated accumulation. For multiple tags we fetch the
- * full result set for each tag separately, intersect by asset ID, and return
- * the intersection as a single flat list.
+ * Example: [[Jahr/2012, Jahr/2013], [Veranstaltung/GV]] returns assets that
+ * have (Jahr/2012 OR Jahr/2013) AND Veranstaltung/GV.
+ *
+ * Immich's /api/search/metadata tagIds field is natively OR, so one request
+ * per group suffices; results are then intersected across groups.
  */
-export function useAssetsQuery(tagIds: string[]): AssetsQueryResult {
-  const enabled = tagIds.length > 0;
-  const multiTag = tagIds.length > 1;
+export function useAssetsQuery(tagGroups: string[][]): AssetsQueryResult {
+  const totalTags = tagGroups.reduce((n, g) => n + g.length, 0);
+  const enabled = totalTags > 0;
+  const multiGroup = tagGroups.length > 1;
+  // Single group with multiple tags or single tag — use paginated path
+  const singleGroup = tagGroups.length === 1;
 
-  const tagKey = tagIds.join(',');
+  const tagKey = tagGroups.map((g) => g.join('|')).join(',');
   const [page, setPage] = useState(1);
-  // Accumulated pages for single-tag infinite scroll
   const [accumulated, setAccumulated] = useState<AssetMetadata[][]>([]);
   const lastTagKey = useRef(tagKey);
 
@@ -40,13 +45,31 @@ export function useAssetsQuery(tagIds: string[]): AssetsQueryResult {
     }
   }, [tagKey]);
 
-  // Multi-tag: fetch all assets per tag then intersect (true AND semantics).
-  // Immich's tagIds is OR, so we must resolve each tag separately.
+  // Multi-group: one fetch per group (OR within group), then AND-intersect across groups.
+  // fetchAllAssetsForTag fetches a single tag; for an OR group we use searchAssets directly.
   const intersectQuery = useQuery({
-    queryKey: ['assets-and', tagIds],
+    queryKey: ['assets-and', tagGroups],
     queryFn: async () => {
-      const perTag = await Promise.all(tagIds.map((id) => fetchAllAssetsForTag(id)));
-      const sorted = [...perTag].sort((a, b) => a.length - b.length);
+      const fetchGroup = (ids: string[]) =>
+        ids.length === 1
+          ? fetchAllAssetsForTag(ids[0] as string)
+          : // OR group: drain pages using the native tagIds OR behaviour
+            (async () => {
+              const all: AssetMetadata[] = [];
+              let p = 1;
+              while (p <= 20) {
+                const res = await searchAssets(ids, p, 250);
+                all.push(...res.assets.items);
+                if (res.assets.nextPage === null) break;
+                p++;
+              }
+              return all;
+            })();
+
+      const perGroup = await Promise.all(tagGroups.map(fetchGroup));
+
+      // Intersect: start from smallest group result for efficiency
+      const sorted = [...perGroup].sort((a, b) => a.length - b.length);
       const pivot = sorted[0];
       if (pivot === undefined) return [];
       const keepIds = new Set(pivot.map((a) => a.id));
@@ -58,15 +81,16 @@ export function useAssetsQuery(tagIds: string[]): AssetsQueryResult {
       }
       return pivot.filter((a) => keepIds.has(a.id));
     },
-    enabled: enabled && multiTag,
+    enabled: enabled && multiGroup,
     staleTime: 60_000,
   });
 
-  // Single-tag: paginated, accumulate pages for infinite scroll
+  // Single group (OR within group): paginated accumulation
+  const singleIds = tagGroups[0] ?? [];
   const singleQuery = useQuery({
-    queryKey: ['assets', tagIds, page],
+    queryKey: ['assets', singleIds, page],
     queryFn: async () => {
-      const result = await searchAssets(tagIds, page, PAGE_SIZE);
+      const result = await searchAssets(singleIds, page, PAGE_SIZE);
       setAccumulated((prev) => {
         const next = [...prev];
         next[page - 1] = result.assets.items;
@@ -74,11 +98,11 @@ export function useAssetsQuery(tagIds: string[]): AssetsQueryResult {
       });
       return result;
     },
-    enabled: enabled && !multiTag,
+    enabled: enabled && singleGroup,
     staleTime: 60_000,
   });
 
-  if (multiTag) {
+  if (multiGroup) {
     const items = intersectQuery.data ?? [];
     return {
       pages: items.length > 0 ? [items] : [],
