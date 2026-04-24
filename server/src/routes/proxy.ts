@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import type { FastifyInstance } from 'fastify';
 import { fetch } from 'undici';
-import { pipeline } from 'node:stream/promises';
 import { Readable } from 'node:stream';
 import type { Config } from '../config.js';
 import { getSession, clearSessionCookie } from '../session.js';
@@ -79,14 +78,15 @@ export async function proxyRoutes(
 
     reply.status(upstream.status);
 
-    // Stream body — never buffer (important for thumbnails / originals)
+    // Stream body via reply.send() so Fastify owns the response lifecycle.
+    // Piping to reply.raw directly causes ERR_HTTP_HEADERS_SENT because
+    // Fastify's error handler tries to write headers after the raw stream ends.
     if (upstream.body) {
       const readable = Readable.fromWeb(
         upstream.body as Parameters<typeof Readable.fromWeb>[0],
       );
-      await pipeline(readable, reply.raw);
-    } else {
-      reply.raw.end();
+      return reply.send(readable);
     }
+    return reply.send();
   });
 }
