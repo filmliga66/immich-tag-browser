@@ -2,8 +2,6 @@
 
 Companion web app for Immich — browse, search, multi-select tags; filter assets by the selection.
 
-Architecture lives in [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md). Read it before structural changes.
-
 ## Stack
 
 - Monorepo: pnpm workspaces (`web/`, `server/`, `shared/`)

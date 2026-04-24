@@ -2,8 +2,6 @@
 
 A companion web app for [Immich](https://immich.app/) — browse, search, and multi-select tags to filter assets by the intersection.
 
-See [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) for architecture.
-
 ## Run with Docker Compose
 
 Create a `.env` next to your `docker-compose.yml` (see [.env.example](.env.example) for all variables):
