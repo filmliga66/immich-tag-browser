@@ -32,5 +32,5 @@ When implementing an issue:
 
 - `pnpm lint && pnpm typecheck && pnpm test` green.
 - Docker build succeeds locally if you touched `docker/`, `server/`, or prod deps.
-- New env vars documented in the plan and README.
+- New env vars documented in the plan and README and `.env.example`.
 - PR title uses Conventional Commit style.
