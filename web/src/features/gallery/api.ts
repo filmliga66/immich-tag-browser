@@ -32,3 +32,24 @@ export async function searchAssets(
   if (!res.ok) throw new Error(`Search failed (${res.status})`);
   return res.json() as Promise<SearchMetadataResponse>;
 }
+
+/**
+ * Fetches all assets for a single tag by draining all pages, up to maxPages.
+ * Used for AND intersection: Immich's tagIds field is OR, so we must fetch
+ * each tag's full result set separately and intersect client-side.
+ */
+export async function fetchAllAssetsForTag(
+  tagId: string,
+  maxPages = 20,
+  pageSize = 250,
+): Promise<AssetMetadata[]> {
+  const all: AssetMetadata[] = [];
+  let page = 1;
+  while (page <= maxPages) {
+    const res = await searchAssets([tagId], page, pageSize);
+    all.push(...res.assets.items);
+    if (res.assets.nextPage === null) break;
+    page++;
+  }
+  return all;
+}
