@@ -45,7 +45,8 @@
       "Bash(docker build*)",
       "Bash(docker compose config*)",
       "Bash(docker compose ps*)",
-      "Bash(docker image ls*)"
+      "Bash(docker image ls*)",
+      "Bash(gh pr *)"
     ],
     "deny": [
       "Bash(rm -rf *)",
