@@ -27,15 +27,16 @@ function SpinnerFooter(): JSX.Element {
 }
 
 interface AssetGridProps {
-  tagIds: string[];
+  tagGroups: string[][];
 }
 
-export function AssetGrid({ tagIds }: AssetGridProps): JSX.Element {
+export function AssetGrid({ tagGroups }: AssetGridProps): JSX.Element {
   const { pages, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading, isError } =
-    useAssetsQuery(tagIds);
+    useAssetsQuery(tagGroups);
   const config = useConfigQuery();
+  const totalTags = tagGroups.reduce((n, g) => n + g.length, 0);
 
-  if (tagIds.length === 0) {
+  if (totalTags === 0) {
     return (
       <div className="flex h-full items-center justify-center text-gray-400 dark:text-gray-500">
         <p className="text-lg">Select tags to browse assets</p>

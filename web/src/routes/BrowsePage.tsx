@@ -43,18 +43,28 @@ export function BrowsePage(): JSX.Element {
 
   const valueToIdMap = new Map<string, string>();
   const valueToNameMap = new Map<string, string>();
+  const valueToParentIdMap = new Map<string, string | null>();
   function indexTree(nodes: typeof tree): void {
     for (const node of nodes) {
       valueToIdMap.set(node.value, node.id);
       valueToNameMap.set(node.value, node.name);
+      valueToParentIdMap.set(node.value, node.parentId);
       indexTree(node.children);
     }
   }
   indexTree(tree);
 
-  const selectedTagIds = selectedValues
-    .map((value) => valueToIdMap.get(value))
-    .filter((id): id is string => id !== undefined);
+  // Group selected tags by parentId: OR within group, AND across groups.
+  const groupMap = new Map<string | null, string[]>();
+  for (const value of selectedValues) {
+    const id = valueToIdMap.get(value);
+    if (id === undefined) continue;
+    const parentId = valueToParentIdMap.get(value) ?? null;
+    const group = groupMap.get(parentId) ?? [];
+    group.push(id);
+    groupMap.set(parentId, group);
+  }
+  const tagGroups = [...groupMap.values()];
 
   function toggleTag(value: string): void {
     const next = new Set(selectedValueSet);
@@ -119,7 +129,7 @@ export function BrowsePage(): JSX.Element {
         {/* Main content */}
         <main className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-immich-gray-50 dark:bg-immich-dark-bg">
           <ChipBar labelFor={(value) => valueToNameMap.get(value) ?? value} />
-          <AssetGrid tagIds={selectedTagIds} />
+          <AssetGrid tagGroups={tagGroups} />
         </main>
       </div>
     </div>
