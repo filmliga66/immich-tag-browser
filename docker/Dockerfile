@@ -2,7 +2,7 @@
 # syntax=docker/dockerfile:1.7
 
 # ── Stage 1: Install all deps and build everything ──────────────────────────
-FROM node:24-alpine AS builder
+FROM node:25-alpine AS builder
 
 # pnpm via corepack
 RUN corepack enable && corepack prepare pnpm@latest --activate
@@ -33,7 +33,7 @@ RUN pnpm --filter @immich-tag-browser/server build
 RUN pnpm --filter @immich-tag-browser/web build
 
 # ── Stage 2: Production runtime ──────────────────────────────────────────────
-FROM node:24-alpine AS runtime
+FROM node:25-alpine AS runtime
 
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
