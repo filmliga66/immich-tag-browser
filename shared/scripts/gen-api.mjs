@@ -33,7 +33,7 @@ async function main() {
   console.log('Generating TypeScript types with openapi-typescript…');
   execSync(
     `pnpm exec openapi-typescript ${specPath} --output ${path.join(OUT_DIR, 'schema.d.ts')}`,
-    { stdio: 'inherit', cwd: path.resolve(__dirname, '../..') },
+    { stdio: 'inherit', cwd: path.resolve(__dirname, '..') },
   );
 
   console.log(`Done. Types written to ${OUT_DIR}/schema.d.ts`);

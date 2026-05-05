@@ -4,8 +4,8 @@
 # ── Stage 1: Install all deps and build everything ──────────────────────────
 FROM node:25-alpine AS builder
 
-# pnpm via corepack
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# corepack was removed from Node 25; install it first, then activate pnpm
+RUN npm install -g corepack && corepack enable && corepack prepare pnpm@latest --activate
 
 WORKDIR /app
 
@@ -35,7 +35,7 @@ RUN pnpm --filter @immich-tag-browser/web build
 # ── Stage 2: Production runtime ──────────────────────────────────────────────
 FROM node:25-alpine AS runtime
 
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN npm install -g corepack && corepack enable && corepack prepare pnpm@latest --activate
 
 WORKDIR /app
 
