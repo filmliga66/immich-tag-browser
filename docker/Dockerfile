@@ -2,7 +2,7 @@
 # syntax=docker/dockerfile:1.7
 
 # ── Stage 1: Install all deps and build everything ──────────────────────────
-FROM node:25-alpine AS builder
+FROM node:26-alpine AS builder
 
 # corepack was removed from Node 25; install it first, then activate pnpm
 RUN npm install -g corepack && corepack enable && corepack prepare pnpm@latest --activate
@@ -33,7 +33,7 @@ RUN pnpm --filter @immich-tag-browser/server build
 RUN pnpm --filter @immich-tag-browser/web build
 
 # ── Stage 2: Production runtime ──────────────────────────────────────────────
-FROM node:25-alpine AS runtime
+FROM node:26-alpine AS runtime
 
 RUN npm install -g corepack && corepack enable && corepack prepare pnpm@latest --activate
 
