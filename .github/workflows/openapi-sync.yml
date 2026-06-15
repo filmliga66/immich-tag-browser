@@ -6,8 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
   sync:
@@ -33,7 +32,7 @@ jobs:
       - uses: actions/setup-node@v6
         if: steps.guard.outputs.ready == 'true'
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
 
       - name: Install dependencies
@@ -44,10 +43,19 @@ jobs:
         if: steps.guard.outputs.ready == 'true'
         run: pnpm --filter web run gen:api
 
+      - name: Create GitHub App token
+        if: steps.guard.outputs.ready == 'true'
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.OPENAPI_SYNC_APP_ID }}
+          private-key: ${{ secrets.OPENAPI_SYNC_APP_PRIVATE_KEY }}
+
       - name: Open PR if drift detected
         if: steps.guard.outputs.ready == 'true'
         uses: peter-evans/create-pull-request@v8
         with:
+          token: ${{ steps.app-token.outputs.token }}
           branch: chore/openapi-sync
           commit-message: 'chore: resync Immich OpenAPI types'
           title: 'chore: resync Immich OpenAPI types'
