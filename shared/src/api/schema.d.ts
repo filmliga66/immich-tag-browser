@@ -88,6 +88,50 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the admin configuration
+         * @description Retrieve admin configuration.
+         */
+        get: operations["getAdminConfig"];
+        /**
+         * Update the system configuration
+         * @description Update the system configuration with a new system configuration.
+         */
+        put: operations["updateAdminConfig"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/config/defaults": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the system configuration defaults
+         * @description Retrieve the default value of every system configuration property.
+         */
+        get: operations["getAdminConfigDefaults"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/database-backups": {
         parameters: {
             query?: never;
@@ -823,6 +867,90 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api-keys/{id}/rotate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Rotate an API key
+         * @description Generates a new secret for an API key, immediately invalidating the previous one. The current user must own this API key.
+         */
+        post: operations["rotateApiKey"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/asset-files": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Search asset files
+         * @description Returns all matching asset files.
+         */
+        get: operations["searchAssetFiles"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/asset-files/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieve an asset file
+         * @description Returns metadata about a specific asset file.
+         */
+        get: operations["getAssetFile"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete an asset file
+         * @description Delete a file and remove it from the database.
+         */
+        delete: operations["deleteAssetFile"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/asset-files/{id}/download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Download an asset file
+         * @description Serve the contents of a specific asset file.
+         */
+        get: operations["downloadAssetFile"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/assets": {
         parameters: {
             query?: never;
@@ -1399,6 +1527,190 @@ export interface paths {
          * @description Validate the current authorization method is still valid.
          */
         post: operations["validateAccessToken"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cluster-groups/requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieve cluster group requests
+         * @description Retrieve the pending requests for the current user to join a cluster group.
+         */
+        get: operations["getClusterGroupRequests"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cluster-groups/requests/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Decline a cluster group request
+         * @description Delete a pending request to join a cluster group.
+         */
+        delete: operations["deleteClusterGroupRequest"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cluster-groups/requests/{id}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Accept a cluster group request
+         * @description Join the cluster group the request was created for.
+         */
+        post: operations["acceptClusterGroupRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cluster-groups/{id}/leave": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Leave a cluster group
+         * @description Move the current user into a new cluster group of their own.
+         */
+        post: operations["leaveClusterGroup"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cluster-groups/{id}/regenerate-people": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Regenerate people of users in cluster group
+         * @description Forcefully re-run facial recognition for all faces of users in this group.
+         */
+        post: operations["clusterGroupRegeneratePeople"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cluster-groups/{id}/requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieve the requests sent by a cluster group
+         * @description Retrieve the pending requests for other users to join the cluster group.
+         */
+        get: operations["getClusterGroupRequestsForGroup"];
+        /**
+         * Create a cluster group request
+         * @description Ask another user to join the cluster group of the current user.
+         */
+        put: operations["createClusterGroupRequest"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cluster-groups/{id}/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieve the users of a cluster group
+         * @description Retrieve the users that are a member of the cluster group.
+         */
+        get: operations["getClusterGroupUsers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the configuration with user visibility
+         * @description Retrieve the system configuration properties that are visible to logged in users.
+         */
+        get: operations["getUserConfig"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/config/defaults": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the default configuration with user visibility
+         * @description Retrieve the default value of the configuration properties that are visible to logged in users.
+         */
+        get: operations["getUserConfigDefaults"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -2303,6 +2615,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/public/config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the public configuration
+         * @description Retrieve the system configuration properties that are visible to everyone.
+         */
+        get: operations["getPublicConfig"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/config/defaults": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the public configuration defaults
+         * @description Retrieve the default value of the configuration properties that are visible to everyone.
+         */
+        get: operations["getPublicConfigDefaults"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/queues": {
         parameters: {
             query?: never;
@@ -2422,6 +2774,7 @@ export interface paths {
         put?: never;
         /**
          * Search large assets
+         * @deprecated
          * @description Search for assets that are considered large based on specified criteria.
          */
         post: operations["searchLargeAssets"];
@@ -2620,6 +2973,7 @@ export interface paths {
         };
         /**
          * Get config
+         * @deprecated
          * @description Retrieve the current server configuration.
          */
         get: operations["getServerConfig"];
@@ -2640,6 +2994,7 @@ export interface paths {
         };
         /**
          * Get features
+         * @deprecated
          * @description Retrieve available features supported by this server.
          */
         get: operations["getServerFeatures"];
@@ -3142,11 +3497,13 @@ export interface paths {
         };
         /**
          * Get system configuration
+         * @deprecated
          * @description Retrieve the current system configuration.
          */
         get: operations["getConfig"];
         /**
          * Update system configuration
+         * @deprecated
          * @description Update the system configuration with a new system configuration.
          */
         put: operations["updateConfig"];
@@ -3166,6 +3523,7 @@ export interface paths {
         };
         /**
          * Get system configuration defaults
+         * @deprecated
          * @description Retrieve the default values for the system configuration.
          */
         get: operations["getConfigDefaults"];
@@ -3785,6 +4143,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/workflows/{id}/logs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieve workflow logs
+         * @description Retrieve logs of a workflows runs by ID
+         */
+        get: operations["getWorkflowLogs"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/workflows/{id}/share": {
         parameters: {
             query?: never;
@@ -3857,6 +4235,413 @@ export interface components {
             /** @description Album users to add */
             albumUsers: components["schemas"]["AlbumUserAddDto"][];
         };
+        AdminConfigBackupsDto: {
+            database: components["schemas"]["AdminConfigDatabaseBackupDto"];
+        };
+        AdminConfigClipDto: {
+            /** @description Whether the task is enabled */
+            enabled: boolean;
+            /** @description Name of the model to use */
+            modelName: string;
+        };
+        AdminConfigDatabaseBackupDto: {
+            /** @description Cron expression */
+            cronExpression: string;
+            /** @description Enabled */
+            enabled: boolean;
+            /** @description Keep last amount */
+            keepLastAmount: number;
+        };
+        /** @description Configuration properties that are visible to the admin */
+        AdminConfigDto: {
+            backup: components["schemas"]["AdminConfigBackupsDto"];
+            ffmpeg: components["schemas"]["AdminConfigFFmpegDto"];
+            image: components["schemas"]["AdminConfigImageDto"];
+            integrityChecks: components["schemas"]["AdminConfigIntegrityChecksDto"];
+            job: components["schemas"]["AdminConfigJobDto"];
+            library: components["schemas"]["AdminConfigLibraryDto"];
+            logging: components["schemas"]["AdminConfigLoggingDto"];
+            machineLearning: components["schemas"]["AdminConfigMachineLearningDto"];
+            map: components["schemas"]["AdminConfigMapDto"];
+            metadata: components["schemas"]["AdminConfigMetadataDto"];
+            newVersionCheck: components["schemas"]["AdminConfigNewVersionCheckDto"];
+            nightlyTasks: components["schemas"]["AdminConfigNightlyTasksDto"];
+            notifications: components["schemas"]["AdminConfigNotificationsDto"];
+            oauth: components["schemas"]["AdminConfigOAuthDto"];
+            passwordLogin: components["schemas"]["AdminConfigPasswordLoginDto"];
+            reverseGeocoding: components["schemas"]["AdminConfigReverseGeocodingDto"];
+            server: components["schemas"]["AdminConfigServerDto"];
+            storageTemplate: components["schemas"]["AdminConfigStorageTemplateDto"];
+            templates: components["schemas"]["AdminConfigTemplatesDto"];
+            theme: components["schemas"]["AdminConfigThemeDto"];
+            trash: components["schemas"]["AdminConfigTrashDto"];
+            user: components["schemas"]["AdminConfigUserDto"];
+        };
+        AdminConfigDuplicateDetectionDto: {
+            /** @description Whether the task is enabled */
+            enabled: boolean;
+            /**
+             * Format: double
+             * @description Maximum distance threshold for duplicate detection
+             */
+            maxDistance: number;
+        };
+        AdminConfigFFmpegDto: {
+            accel: components["schemas"]["TranscodeHWAccel"];
+            /** @description Accelerated decode */
+            accelDecode: boolean;
+            /** @description Accepted audio codecs */
+            acceptedAudioCodecs: components["schemas"]["AudioCodec"][];
+            /** @description Accepted containers */
+            acceptedContainers: components["schemas"]["VideoContainer"][];
+            /** @description Accepted video codecs */
+            acceptedVideoCodecs: components["schemas"]["VideoCodec"][];
+            /** @description B-frames */
+            bframes: number;
+            cqMode: components["schemas"]["CQMode"];
+            /** @description CRF */
+            crf: number;
+            /** @description GOP size */
+            gopSize: number;
+            /** @description Max bitrate */
+            maxBitrate: string;
+            /** @description Preferred hardware device */
+            preferredHwDevice: string;
+            /** @description Preset */
+            preset: string;
+            realtime: components["schemas"]["AdminConfigFFmpegRealtimeDto"];
+            /** @description References */
+            refs: number;
+            targetAudioCodec: components["schemas"]["AudioCodec"];
+            /** @description Target resolution */
+            targetResolution: string;
+            targetVideoCodec: components["schemas"]["VideoCodec"];
+            /** @description Temporal AQ */
+            temporalAQ: boolean;
+            /** @description Threads */
+            threads: number;
+            tonemap: components["schemas"]["ToneMapping"];
+            transcode: components["schemas"]["TranscodePolicy"];
+            /** @description Two pass */
+            twoPass: boolean;
+        };
+        AdminConfigFFmpegRealtimeDto: {
+            /** @description Enable real-time HLS transcoding (alpha) */
+            enabled: boolean;
+            /** @description Resolutions to use for real-time HLS transcoding */
+            resolutions: components["schemas"]["HlsVideoResolution"][];
+            /** @description Video codecs to use for real-time HLS transcoding */
+            videoCodecs: components["schemas"]["VideoCodec"][];
+        };
+        AdminConfigFacesDto: {
+            /** @description Import */
+            import: boolean;
+        };
+        AdminConfigFacialRecognitionDto: {
+            /** @description Whether the task is enabled */
+            enabled: boolean;
+            /**
+             * Format: double
+             * @description Maximum distance threshold for face recognition
+             */
+            maxDistance: number;
+            /** @description Minimum number of faces required for recognition */
+            minFaces: number;
+            /**
+             * Format: double
+             * @description Minimum confidence score for face detection
+             */
+            minScore: number;
+            /** @description Name of the model to use */
+            modelName: string;
+        };
+        AdminConfigGeneratedFullsizeImageDto: {
+            /** @description Enabled */
+            enabled: boolean;
+            format: components["schemas"]["ImageFormat"];
+            /** @description Progressive */
+            progressive?: boolean;
+            /** @description Quality */
+            quality: number;
+        };
+        AdminConfigGeneratedImageDto: {
+            format: components["schemas"]["ImageFormat"];
+            /** @description Progressive */
+            progressive?: boolean;
+            /** @description Quality */
+            quality: number;
+            /** @description Size */
+            size: number;
+        };
+        AdminConfigImageDto: {
+            colorspace: components["schemas"]["Colorspace"];
+            /** @description Extract embedded */
+            extractEmbedded: boolean;
+            fullsize: components["schemas"]["AdminConfigGeneratedFullsizeImageDto"];
+            preview: components["schemas"]["AdminConfigGeneratedImageDto"];
+            thumbnail: components["schemas"]["AdminConfigGeneratedImageDto"];
+        };
+        /** @description Integrity checks config */
+        AdminConfigIntegrityChecksDto: {
+            checksumFiles: components["schemas"]["AdminConfigIntegrityChecksumJobDto"];
+            missingFiles: components["schemas"]["AdminConfigIntegrityJobDto"];
+            untrackedFiles: components["schemas"]["AdminConfigIntegrityJobDto"];
+        };
+        /** @description Integrity checksum job config */
+        AdminConfigIntegrityChecksumJobDto: {
+            /** @description Cron expression for when the integrity check should run */
+            cronExpression: string;
+            /** @description Enabled */
+            enabled: boolean;
+            /**
+             * Format: double
+             * @description Percentage limit of the integrity checksum job
+             */
+            percentageLimit: number;
+            /** @description How long the integrity checksum job may run for */
+            timeLimit: number;
+        };
+        /** @description Integrity job config */
+        AdminConfigIntegrityJobDto: {
+            /** @description Cron expression for when the integrity check should run */
+            cronExpression: string;
+            /** @description Enabled */
+            enabled: boolean;
+        };
+        AdminConfigJobDto: {
+            backgroundTask: components["schemas"]["AdminConfigJobSettingsDto"];
+            editor: components["schemas"]["AdminConfigJobSettingsDto"];
+            faceDetection: components["schemas"]["AdminConfigJobSettingsDto"];
+            integrityCheck: components["schemas"]["AdminConfigJobSettingsDto"];
+            library: components["schemas"]["AdminConfigJobSettingsDto"];
+            metadataExtraction: components["schemas"]["AdminConfigJobSettingsDto"];
+            migration: components["schemas"]["AdminConfigJobSettingsDto"];
+            notifications: components["schemas"]["AdminConfigJobSettingsDto"];
+            ocr: components["schemas"]["AdminConfigJobSettingsDto"];
+            search: components["schemas"]["AdminConfigJobSettingsDto"];
+            sidecar: components["schemas"]["AdminConfigJobSettingsDto"];
+            smartSearch: components["schemas"]["AdminConfigJobSettingsDto"];
+            thumbnailGeneration: components["schemas"]["AdminConfigJobSettingsDto"];
+            videoConversion: components["schemas"]["AdminConfigJobSettingsDto"];
+            workflow: components["schemas"]["AdminConfigJobSettingsDto"];
+        };
+        AdminConfigJobSettingsDto: {
+            /** @description Concurrency */
+            concurrency: number;
+        };
+        AdminConfigLibraryDto: {
+            scan: components["schemas"]["AdminConfigLibraryScanDto"];
+            watch: components["schemas"]["AdminConfigLibraryWatchDto"];
+        };
+        AdminConfigLibraryScanDto: {
+            /** @description Cron expression */
+            cronExpression: string;
+            /** @description Enabled */
+            enabled: boolean;
+        };
+        AdminConfigLibraryWatchDto: {
+            /** @description Enabled */
+            enabled: boolean;
+        };
+        AdminConfigLoggingDto: {
+            /** @description Enabled */
+            enabled: boolean;
+            level: components["schemas"]["LogLevel"];
+        };
+        AdminConfigMachineLearningAvailabilityChecksDto: {
+            /** @description Enabled */
+            enabled: boolean;
+            interval: number;
+            timeout: number;
+        };
+        AdminConfigMachineLearningDto: {
+            availabilityChecks: components["schemas"]["AdminConfigMachineLearningAvailabilityChecksDto"];
+            clip: components["schemas"]["AdminConfigClipDto"];
+            duplicateDetection: components["schemas"]["AdminConfigDuplicateDetectionDto"];
+            /** @description Enabled */
+            enabled: boolean;
+            facialRecognition: components["schemas"]["AdminConfigFacialRecognitionDto"];
+            ocr: components["schemas"]["AdminConfigOcrDto"];
+            /** @description ML service URLs */
+            urls: string[];
+        };
+        AdminConfigMapDto: {
+            /**
+             * Format: uri
+             * @description Dark map style URL
+             */
+            darkStyle: string;
+            /** @description Enabled */
+            enabled: boolean;
+            /**
+             * Format: uri
+             * @description Light map style URL
+             */
+            lightStyle: string;
+        };
+        AdminConfigMetadataDto: {
+            faces: components["schemas"]["AdminConfigFacesDto"];
+        };
+        AdminConfigNewVersionCheckDto: {
+            channel: components["schemas"]["ReleaseChannel"];
+            /** @description Enabled */
+            enabled: boolean;
+        };
+        AdminConfigNightlyTasksDto: {
+            /** @description Cluster new faces */
+            clusterNewFaces: boolean;
+            /** @description Database cleanup */
+            databaseCleanup: boolean;
+            /** @description Generate memories */
+            generateMemories: boolean;
+            /** @description Missing thumbnails */
+            missingThumbnails: boolean;
+            /** @description Start time (HH:MM) */
+            startTime: string;
+            /** @description Sync quota usage */
+            syncQuotaUsage: boolean;
+        };
+        AdminConfigNotificationsDto: {
+            smtp: components["schemas"]["AdminConfigSmtpDto"];
+        };
+        AdminConfigOAuthDto: {
+            /**
+             * @description Account management URL
+             * @default
+             */
+            accountManagementUrl: string;
+            /** @description Allow insecure requests */
+            allowInsecureRequests: boolean;
+            /** @description Auto launch */
+            autoLaunch: boolean;
+            /** @description Auto register */
+            autoRegister: boolean;
+            /** @description Button text */
+            buttonText: string;
+            /** @description Client ID */
+            clientId: string;
+            /** @description Client secret */
+            clientSecret: string;
+            /** @description Default storage quota */
+            defaultStorageQuota: number | null;
+            /** @description Enabled */
+            enabled: boolean;
+            /** @description End session endpoint */
+            endSessionEndpoint: string;
+            /** @description Issuer URL */
+            issuerUrl: string;
+            /** @description Mobile override enabled */
+            mobileOverrideEnabled: boolean;
+            /** @description Mobile redirect URI (set to empty string to disable) */
+            mobileRedirectUri: string;
+            /** @description Profile signing algorithm */
+            profileSigningAlgorithm: string;
+            /** @description OAuth prompt parameter (e.g. select_account, login, consent) */
+            prompt: string;
+            /** @description Role claim */
+            roleClaim: string;
+            /** @description Scope */
+            scope: string;
+            /** @description Signing algorithm */
+            signingAlgorithm: string;
+            /** @description Storage label claim */
+            storageLabelClaim: string;
+            /** @description Storage quota claim */
+            storageQuotaClaim: string;
+            /** @description Timeout */
+            timeout: number;
+            tokenEndpointAuthMethod: components["schemas"]["OAuthTokenEndpointAuthMethod"];
+        };
+        AdminConfigOcrDto: {
+            /** @description Whether the task is enabled */
+            enabled: boolean;
+            /** @description Maximum resolution for OCR processing */
+            maxResolution: number;
+            /**
+             * Format: double
+             * @description Minimum confidence score for text detection
+             */
+            minDetectionScore: number;
+            /**
+             * Format: double
+             * @description Minimum confidence score for text recognition
+             */
+            minRecognitionScore: number;
+            /** @description Name of the model to use */
+            modelName: string;
+        };
+        AdminConfigPasswordLoginDto: {
+            /** @description Enabled */
+            enabled: boolean;
+        };
+        AdminConfigReverseGeocodingDto: {
+            /** @description Enabled */
+            enabled: boolean;
+        };
+        AdminConfigServerDto: {
+            /** @description External domain */
+            externalDomain: string;
+            /** @description Login page message */
+            loginPageMessage: string;
+            /** @description Public users */
+            publicUsers: boolean;
+        };
+        AdminConfigSmtpDto: {
+            /** @description Whether SMTP email notifications are enabled */
+            enabled: boolean;
+            /** @description Email address to send from */
+            from: string;
+            /** @description Email address for replies */
+            replyTo: string;
+            transport: components["schemas"]["AdminConfigSmtpTransportDto"];
+        };
+        AdminConfigSmtpTransportDto: {
+            /** @description SMTP server hostname */
+            host: string;
+            /** @description Whether to ignore SSL certificate errors */
+            ignoreCert: boolean;
+            /** @description SMTP password */
+            password: string;
+            /** @description SMTP server port */
+            port: number;
+            /** @description Whether to use secure connection (TLS/SSL) */
+            secure: boolean;
+            /** @description SMTP username */
+            username: string;
+        };
+        AdminConfigStorageTemplateDto: {
+            /** @description Enabled */
+            enabled: boolean;
+            /** @description Hash verification enabled */
+            hashVerificationEnabled: boolean;
+            /** @description Template */
+            template: string;
+        };
+        AdminConfigTemplateEmailsDto: {
+            /** @description Album invite template */
+            albumInviteTemplate: string;
+            /** @description Album update template */
+            albumUpdateTemplate: string;
+            /** @description Welcome template */
+            welcomeTemplate: string;
+        };
+        AdminConfigTemplatesDto: {
+            email: components["schemas"]["AdminConfigTemplateEmailsDto"];
+        };
+        AdminConfigThemeDto: {
+            /** @description Custom CSS for theming */
+            customCss: string;
+        };
+        AdminConfigTrashDto: {
+            /** @description Days */
+            days: number;
+            /** @description Enabled */
+            enabled: boolean;
+        };
+        AdminConfigUserDto: {
+            /** @description Delete delay */
+            deleteDelay: number;
+        };
         AdminOnboardingUpdateDto: {
             /** @description Is admin onboarded */
             isOnboarded: boolean;
@@ -3864,7 +4649,10 @@ export interface components {
         AlbumResponseDto: {
             /** @description Album name */
             albumName: string;
-            /** @description Thumbnail asset ID */
+            /**
+             * Format: uuid
+             * @description Thumbnail asset ID
+             */
             albumThumbnailAssetId: string | null;
             /** @description First entry is always the album owner. Second entry is the auth user, if it differs from the owner. The rest are ordered alphabetically. */
             albumUsers: components["schemas"]["AlbumUserResponseDto"][];
@@ -3885,7 +4673,10 @@ export interface components {
             endDate?: string;
             /** @description Has shared link */
             hasSharedLink: boolean;
-            /** @description Album ID */
+            /**
+             * Format: uuid
+             * @description Album ID
+             */
             id: string;
             /** @description Activity feed enabled */
             isActivityEnabled: boolean;
@@ -3971,8 +4762,29 @@ export interface components {
         };
         ApiKeyCreateResponseDto: {
             apiKey: components["schemas"]["ApiKeyResponseDto"];
+            /**
+             * Format: date-time
+             * @description Creation date
+             * @example 2024-01-01T00:00:00.000Z
+             */
+            createdAt: string;
+            /**
+             * Format: uuid
+             * @description API key ID
+             */
+            id: string;
+            /** @description API key name */
+            name: string;
+            /** @description List of permissions */
+            permissions: components["schemas"]["Permission"][];
             /** @description API key secret (only shown once) */
             secret: string;
+            /**
+             * Format: date-time
+             * @description Last update date
+             * @example 2024-01-01T00:00:00.000Z
+             */
+            updatedAt: string;
         };
         ApiKeyResponseDto: {
             /**
@@ -3981,7 +4793,10 @@ export interface components {
              * @example 2024-01-01T00:00:00.000Z
              */
             createdAt: string;
-            /** @description API key ID */
+            /**
+             * Format: uuid
+             * @description API key ID
+             */
             id: string;
             /** @description API key name */
             name: string;
@@ -4009,7 +4824,7 @@ export interface components {
         AssetBulkUpdateDto: {
             /** @description Original date and time */
             dateTimeOriginal?: string;
-            /** @description Relative time offset in seconds */
+            /** @description Relative time offset in minutes */
             dateTimeRelative?: number;
             /** @description Asset description */
             description?: string;
@@ -4036,7 +4851,7 @@ export interface components {
         AssetBulkUploadCheckItem: {
             /** @description Base64 or hex encoded SHA1 hash */
             checksum: string;
-            /** @description Asset ID */
+            /** @description Client-side identifier echoed in the response to match results to inputs (e.g. filename) */
             id: string;
         };
         AssetBulkUploadCheckResponseDto: {
@@ -4045,9 +4860,12 @@ export interface components {
         };
         AssetBulkUploadCheckResult: {
             action: components["schemas"]["AssetUploadAction"];
-            /** @description Existing asset ID if duplicate */
+            /**
+             * Format: uuid
+             * @description Existing asset ID if duplicate
+             */
             assetId?: string;
-            /** @description Asset ID */
+            /** @description Client-side identifier echoed from the request to match results to inputs */
             id: string;
             /** @description Whether existing asset is trashed */
             isTrashed?: boolean;
@@ -4189,6 +5007,39 @@ export interface components {
              */
             personId: string;
         };
+        AssetFileResponseDto: {
+            /**
+             * Format: date-time
+             * @description Creation date
+             * @example 2024-01-01T00:00:00.000Z
+             */
+            createdAt: string;
+            /**
+             * Format: uuid
+             * @description Asset file ID
+             */
+            id: string;
+            /** @description The file was generated from an edit */
+            isEdited: boolean;
+            /** @description The file is a progressively encoded JPEG */
+            isProgressive: boolean;
+            /** @description The file is transparent */
+            isTransparent: boolean;
+            /** @description File path */
+            path: string;
+            type: components["schemas"]["AssetFileType"];
+            /**
+             * Format: date-time
+             * @description Update date
+             * @example 2024-01-01T00:00:00.000Z
+             */
+            updatedAt: string;
+        };
+        /**
+         * @description Type of file
+         * @enum {string}
+         */
+        AssetFileType: "fullsize" | "preview" | "thumbnail" | "sidecar" | "encoded_video";
         /**
          * @description Error reason if failed
          * @enum {string}
@@ -4199,7 +5050,10 @@ export interface components {
             assetIds: string[];
         };
         AssetIdsResponseDto: {
-            /** @description Asset ID */
+            /**
+             * Format: uuid
+             * @description Asset ID
+             */
             assetId: string;
             error?: components["schemas"]["AssetIdErrorReason"];
             /** @description Whether operation succeeded */
@@ -4254,7 +5108,10 @@ export interface components {
             visibility?: components["schemas"]["AssetVisibility"];
         };
         AssetMediaResponseDto: {
-            /** @description Asset media ID */
+            /**
+             * Format: uuid
+             * @description Asset media ID
+             */
             id: string;
             status: components["schemas"]["AssetMediaStatus"];
         };
@@ -4282,7 +5139,10 @@ export interface components {
             key: string;
         };
         AssetMetadataBulkResponseDto: {
-            /** @description Asset ID */
+            /**
+             * Format: uuid
+             * @description Asset ID
+             */
             assetId: string;
             /** @description Metadata key */
             key: string;
@@ -4421,7 +5281,10 @@ export interface components {
              * @description The UTC timestamp when the asset was originally uploaded to Immich.
              */
             createdAt: string;
-            /** @description Duplicate group ID */
+            /**
+             * Format: uuid
+             * @description Duplicate group ID
+             */
             duplicateId?: string | null;
             /** @description Video/gif duration in milliseconds (null for static images) */
             duration: number | null;
@@ -4440,7 +5303,10 @@ export interface components {
             hasMetadata: boolean;
             /** @description Asset height */
             height: number | null;
-            /** @description Asset ID */
+            /**
+             * Format: uuid
+             * @description Asset ID
+             */
             id: string;
             /** @description Is archived */
             isArchived: boolean;
@@ -4471,7 +5337,10 @@ export interface components {
             /** @description Original file path */
             originalPath: string;
             owner?: components["schemas"]["UserResponseDto"];
-            /** @description Owner user ID */
+            /**
+             * Format: uuid
+             * @description Owner user ID
+             */
             ownerId: string;
             people?: components["schemas"]["PersonResponseDto"][];
             /** @description Is resized */
@@ -4493,9 +5362,15 @@ export interface components {
         AssetStackResponseDto: {
             /** @description Number of assets in stack */
             assetCount: number;
-            /** @description Stack ID */
+            /**
+             * Format: uuid
+             * @description Stack ID
+             */
             id: string;
-            /** @description Primary asset ID */
+            /**
+             * Format: uuid
+             * @description Primary asset ID
+             */
             primaryAssetId: string;
         };
         AssetStatsResponseDto: {
@@ -4541,6 +5416,9 @@ export interface components {
         AvatarUpdate: {
             color?: components["schemas"]["UserAvatarColor"];
         };
+        BoolFilter: {
+            eq: boolean;
+        };
         /**
          * @description Error reason
          * @enum {string}
@@ -4549,7 +5427,10 @@ export interface components {
         BulkIdResponseDto: {
             error?: components["schemas"]["BulkIdErrorReason"];
             errorMessage?: string;
-            /** @description ID */
+            /**
+             * Format: uuid
+             * @description ID
+             */
             id: string;
             /** @description Whether operation succeeded */
             success: boolean;
@@ -4557,12 +5438,6 @@ export interface components {
         BulkIdsDto: {
             /** @description IDs to process */
             ids: string[];
-        };
-        CLIPConfig: {
-            /** @description Whether the task is enabled */
-            enabled: boolean;
-            /** @description Name of the model to use */
-            modelName: string;
         };
         /**
          * @description CQ mode
@@ -4622,6 +5497,36 @@ export interface components {
              */
             password: string;
         };
+        ClusterGroupRequestCreateDto: {
+            /**
+             * Format: uuid
+             * @description User to invite into the cluster group
+             */
+            userId: string;
+        };
+        ClusterGroupRequestResponseDto: {
+            /**
+             * Format: uuid
+             * @description Cluster group the user is invited to join
+             */
+            clusterGroupId: string;
+            /**
+             * Format: date-time
+             * @description Creation date
+             * @example 2024-01-01T00:00:00.000Z
+             */
+            createdAt: string;
+            /**
+             * Format: uuid
+             * @description Request ID
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description User the request was created for
+             */
+            userId: string;
+        };
         /**
          * @description Colorspace
          * @enum {string}
@@ -4630,7 +5535,10 @@ export interface components {
         ContributorCountResponseDto: {
             /** @description Number of assets contributed */
             assetCount: number;
-            /** @description User ID */
+            /**
+             * Format: uuid
+             * @description User ID
+             */
             userId: string;
         };
         CreateAlbumDto: {
@@ -4641,7 +5549,7 @@ export interface components {
             /** @description Initial asset IDs */
             assetIds?: string[];
             /** @description Album description */
-            description?: string;
+            description?: string | null;
         };
         CreateLibraryDto: {
             /** @description Exclusion patterns (max 128) */
@@ -4672,7 +5580,10 @@ export interface components {
             profileChangedAt: string;
             /** @description Profile image file path */
             profileImagePath: string;
-            /** @description User ID */
+            /**
+             * Format: uuid
+             * @description User ID
+             */
             userId: string;
         };
         CropParameters: {
@@ -4684,14 +5595,6 @@ export interface components {
             x: number;
             /** @description Top-Left Y coordinate of crop */
             y: number;
-        };
-        DatabaseBackupConfig: {
-            /** @description Cron expression */
-            cronExpression: string;
-            /** @description Enabled */
-            enabled: boolean;
-            /** @description Keep last amount */
-            keepLastAmount: number;
         };
         DatabaseBackupDeleteDto: {
             /** @description Backup filenames to delete */
@@ -4716,7 +5619,73 @@ export interface components {
              */
             file?: string;
         };
+        DateFilter: {
+            /**
+             * Format: date-time
+             * @example 2024-01-01T00:00:00.000Z
+             */
+            eq?: string;
+            /**
+             * Format: date-time
+             * @example 2024-01-01T00:00:00.000Z
+             */
+            gt?: string;
+            /**
+             * Format: date-time
+             * @example 2024-01-01T00:00:00.000Z
+             */
+            gte?: string;
+            /**
+             * Format: date-time
+             * @example 2024-01-01T00:00:00.000Z
+             */
+            lt?: string;
+            /**
+             * Format: date-time
+             * @example 2024-01-01T00:00:00.000Z
+             */
+            lte?: string;
+            /**
+             * Format: date-time
+             * @example 2024-01-01T00:00:00.000Z
+             */
+            ne?: string;
+        };
+        DateFilterNullable: {
+            /**
+             * Format: date-time
+             * @example 2024-01-01T00:00:00.000Z
+             */
+            eq?: string | null;
+            /**
+             * Format: date-time
+             * @example 2024-01-01T00:00:00.000Z
+             */
+            gt?: string;
+            /**
+             * Format: date-time
+             * @example 2024-01-01T00:00:00.000Z
+             */
+            gte?: string;
+            /**
+             * Format: date-time
+             * @example 2024-01-01T00:00:00.000Z
+             */
+            lt?: string;
+            /**
+             * Format: date-time
+             * @example 2024-01-01T00:00:00.000Z
+             */
+            lte?: string;
+            /**
+             * Format: date-time
+             * @example 2024-01-01T00:00:00.000Z
+             */
+            ne?: string | null;
+        };
         DownloadArchiveDto: {
+            /** @description The name of the archive to download, without extension */
+            archiveName?: string;
             /** @description Asset IDs */
             assetIds: string[];
             /** @description Download edited asset if available */
@@ -4762,15 +5731,6 @@ export interface components {
             /** @description Whether to include embedded videos in downloads */
             includeEmbeddedVideos?: boolean;
         };
-        DuplicateDetectionConfig: {
-            /** @description Whether the task is enabled */
-            enabled: boolean;
-            /**
-             * Format: double
-             * @description Maximum distance threshold for duplicate detection
-             */
-            maxDistance: number;
-        };
         DuplicateResolveDto: {
             /** @description List of duplicate groups to resolve */
             groups: components["schemas"]["DuplicateResolveGroupDto"][];
@@ -4786,7 +5746,10 @@ export interface components {
         DuplicateResponseDto: {
             /** @description Duplicate assets */
             assets: components["schemas"]["AssetResponseDto"][];
-            /** @description Duplicate group ID */
+            /**
+             * Format: uuid
+             * @description Duplicate group ID
+             */
             duplicateId: string;
             /** @description Suggested asset IDs to keep based on file size and EXIF data */
             suggestedKeepAssetIds: string[];
@@ -4806,6 +5769,18 @@ export interface components {
             albumUpdate?: boolean;
             /** @description Whether email notifications are enabled */
             enabled?: boolean;
+        };
+        EnumFilterAssetType: {
+            eq?: components["schemas"]["AssetTypeEnum"];
+            in?: components["schemas"]["AssetTypeEnum"][];
+            ne?: components["schemas"]["AssetTypeEnum"];
+            notIn?: components["schemas"]["AssetTypeEnum"][];
+        };
+        EnumFilterAssetVisibility: {
+            eq?: components["schemas"]["AssetVisibility"];
+            in?: components["schemas"]["AssetVisibility"][];
+            ne?: components["schemas"]["AssetVisibility"];
+            notIn?: components["schemas"]["AssetVisibility"][];
         };
         /** @description EXIF response */
         ExifResponseDto: {
@@ -4929,24 +5904,6 @@ export interface components {
              */
             id: string;
         };
-        FacialRecognitionConfig: {
-            /** @description Whether the task is enabled */
-            enabled: boolean;
-            /**
-             * Format: double
-             * @description Maximum distance threshold for face recognition
-             */
-            maxDistance: number;
-            /** @description Minimum number of faces required for recognition */
-            minFaces: number;
-            /**
-             * Format: double
-             * @description Minimum confidence score for face detection
-             */
-            minScore: number;
-            /** @description Name of the model to use */
-            modelName: string;
-        };
         FoldersResponse: {
             /** @description Whether folders are enabled */
             enabled: boolean;
@@ -4960,6 +5917,28 @@ export interface components {
             sidebarWeb?: boolean;
         };
         /**
+         * @description HLS video resolution
+         * @enum {integer}
+         */
+        HlsVideoResolution: 480 | 720 | 1080 | 1440 | 2160;
+        IdFilter: {
+            /** Format: uuid */
+            eq?: string;
+            /** Format: uuid */
+            ne?: string;
+        };
+        IdFilterNullable: {
+            /** Format: uuid */
+            eq?: string | null;
+            /** Format: uuid */
+            ne?: string | null;
+        };
+        IdsFilter: {
+            all?: string[];
+            any?: string[];
+            none?: string[];
+        };
+        /**
          * @description Image format
          * @enum {string}
          */
@@ -4971,7 +5950,10 @@ export interface components {
         IntegrityReport: "untracked_file" | "missing_file" | "checksum_mismatch";
         IntegrityReportResponseDto: {
             items: {
-                /** @description Integrity report item id */
+                /**
+                 * Format: uuid
+                 * @description Integrity report item id
+                 */
                 id: string;
                 /** @description Integrity report item path */
                 path: string;
@@ -4992,10 +5974,6 @@ export interface components {
          * @enum {string}
          */
         JobName: "AssetDelete" | "AssetDeleteCheck" | "AssetDetectFacesQueueAll" | "AssetDetectFaces" | "AssetDetectDuplicatesQueueAll" | "AssetDetectDuplicates" | "AssetEditThumbnailGeneration" | "AssetEncodeVideoQueueAll" | "AssetEncodeVideo" | "AssetEmptyTrash" | "AssetExtractMetadataQueueAll" | "AssetExtractMetadata" | "AssetFileMigration" | "AssetGenerateThumbnailsQueueAll" | "AssetGenerateThumbnails" | "AuditTableCleanup" | "DatabaseBackup" | "FacialRecognitionQueueAll" | "FacialRecognition" | "FileDelete" | "FileMigrationQueueAll" | "LibraryDeleteCheck" | "LibraryDelete" | "LibraryRemoveAsset" | "LibraryScanAssetsQueueAll" | "LibrarySyncAssets" | "LibrarySyncFilesQueueAll" | "LibrarySyncFiles" | "LibraryScanQueueAll" | "HlsSessionCleanup" | "MemoryCleanup" | "MemoryGenerate" | "NotificationsCleanup" | "NotifyUserSignup" | "NotifyAlbumInvite" | "NotifyAlbumUpdate" | "UserDelete" | "UserDeleteCheck" | "UserSyncUsage" | "PersonCleanup" | "PersonFileMigration" | "PersonGenerateThumbnail" | "SessionCleanup" | "SendMail" | "SidecarQueueAll" | "SidecarCheck" | "SidecarWrite" | "SmartSearchQueueAll" | "SmartSearch" | "StorageTemplateMigration" | "StorageTemplateMigrationSingle" | "TagCleanup" | "VersionCheck" | "OcrQueueAll" | "Ocr" | "WorkflowAssetTrigger" | "IntegrityUntrackedFilesQueueAll" | "IntegrityUntrackedFiles" | "IntegrityUntrackedRefresh" | "IntegrityMissingFilesQueueAll" | "IntegrityMissingFiles" | "IntegrityMissingFilesRefresh" | "IntegrityChecksumFiles" | "IntegrityChecksumFilesRefresh" | "IntegrityDeleteReportType" | "IntegrityDeleteReports";
-        JobSettingsDto: {
-            /** @description Concurrency */
-            concurrency: number;
-        };
         LibraryResponseDto: {
             /** @description Number of assets */
             assetCount: number;
@@ -5007,13 +5985,19 @@ export interface components {
             createdAt: string;
             /** @description Exclusion patterns */
             exclusionPatterns: string[];
-            /** @description Library ID */
+            /**
+             * Format: uuid
+             * @description Library ID
+             */
             id: string;
             /** @description Import paths */
             importPaths: string[];
             /** @description Library name */
             name: string;
-            /** @description Owner user ID */
+            /**
+             * Format: uuid
+             * @description Owner user ID
+             */
             ownerId: string;
             /**
              * Format: date-time
@@ -5081,7 +6065,10 @@ export interface components {
              * @description User email
              */
             userEmail: string;
-            /** @description User ID */
+            /**
+             * Format: uuid
+             * @description User ID
+             */
             userId: string;
         };
         LogoutResponseDto: {
@@ -5089,12 +6076,6 @@ export interface components {
             redirectUri: string;
             /** @description Logout successful */
             successful: boolean;
-        };
-        MachineLearningAvailabilityChecksDto: {
-            /** @description Enabled */
-            enabled: boolean;
-            interval: number;
-            timeout: number;
         };
         /**
          * @description Maintenance action
@@ -5138,7 +6119,10 @@ export interface components {
             city: string | null;
             /** @description Country name */
             country: string | null;
-            /** @description Asset ID */
+            /**
+             * Format: uuid
+             * @description Asset ID
+             */
             id: string;
             /**
              * Format: double
@@ -5166,12 +6150,16 @@ export interface components {
             duration: number;
             /** @description Whether memories are enabled */
             enabled: boolean;
+            /** @description Whether memories appear in web sidebar */
+            sidebarWeb: boolean;
         };
         MemoriesUpdate: {
             /** @description Memory duration in seconds */
             duration?: number;
             /** @description Whether memories are enabled */
             enabled?: boolean;
+            /** @description Whether memories appear in web sidebar */
+            sidebarWeb?: boolean;
         };
         MemoryCreateDto: {
             /** @description Asset IDs to associate with memory */
@@ -5226,7 +6214,10 @@ export interface components {
              * @example 2024-01-01T00:00:00.000Z
              */
             hideAt?: string;
-            /** @description Memory ID */
+            /**
+             * Format: uuid
+             * @description Memory ID
+             */
             id: string;
             /** @description Is memory saved */
             isSaved: boolean;
@@ -5236,7 +6227,10 @@ export interface components {
              * @example 2024-01-01T00:00:00.000Z
              */
             memoryAt: string;
-            /** @description Owner user ID */
+            /**
+             * Format: uuid
+             * @description Owner user ID
+             */
             ownerId: string;
             /**
              * Format: date-time
@@ -5293,122 +6287,216 @@ export interface components {
             ids: string[];
         };
         MetadataSearchDto: {
-            /** @description Filter by album IDs */
+            /**
+             * @deprecated
+             * @description Filter by album IDs
+             */
             albumIds?: string[];
-            /** @description Filter by file checksum */
+            /**
+             * @deprecated
+             * @description Filter by file checksum
+             */
             checksum?: string;
-            /** @description Filter by city name */
+            /**
+             * @deprecated
+             * @description Filter by city name
+             */
             city?: string | null;
-            /** @description Filter by country name */
+            /**
+             * @deprecated
+             * @description Filter by country name
+             */
             country?: string | null;
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by creation date (after)
              * @example 2024-01-01T00:00:00.000Z
              */
             createdAfter?: string;
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by creation date (before)
              * @example 2024-01-01T00:00:00.000Z
              */
             createdBefore?: string;
-            /** @description Filter by description text */
+            /** @description Cursor for the next page of results */
+            cursor?: string;
+            /**
+             * @deprecated
+             * @description Filter by description text
+             */
             description?: string;
-            /** @description Filter by encoded video file path */
+            /**
+             * @deprecated
+             * @description Filter by encoded video file path
+             */
             encodedVideoPath?: string;
+            filter?: components["schemas"]["SearchFilter"];
             /**
              * Format: uuid
+             * @deprecated
              * @description Filter by asset ID
              */
             id?: string;
-            /** @description Filter by encoded status */
+            /**
+             * @deprecated
+             * @description Filter by encoded status
+             */
             isEncoded?: boolean;
-            /** @description Filter by favorite status */
+            /**
+             * @deprecated
+             * @description Filter by favorite status
+             */
             isFavorite?: boolean;
-            /** @description Filter by motion photo status */
+            /**
+             * @deprecated
+             * @description Filter by motion photo status
+             */
             isMotion?: boolean;
-            /** @description Filter assets not in any album */
+            /**
+             * @deprecated
+             * @description Filter assets not in any album
+             */
             isNotInAlbum?: boolean;
-            /** @description Filter by offline status */
+            /**
+             * @deprecated
+             * @description Filter by offline status
+             */
             isOffline?: boolean;
-            /** @description Filter by lens model */
+            /**
+             * @deprecated
+             * @description Filter by lens model
+             */
             lensModel?: string | null;
             /**
              * Format: uuid
+             * @deprecated
              * @description Library ID to filter by
              */
             libraryId?: string | null;
-            /** @description Filter by camera make */
+            /**
+             * @deprecated
+             * @description Filter by camera make
+             */
             make?: string | null;
-            /** @description Filter by camera model */
+            /**
+             * @deprecated
+             * @description Filter by camera model
+             */
             model?: string | null;
-            /** @description Filter by OCR text content */
+            /**
+             * @deprecated
+             * @description Filter by OCR text content
+             */
             ocr?: string;
             /**
+             * @deprecated
              * @description Sort order
-             * @default desc
              */
-            order: components["schemas"]["AssetOrder"];
-            /** @description Filter by original file name */
+            order?: components["schemas"]["AssetOrder"];
+            orderBy?: components["schemas"]["SearchOrder"];
+            /**
+             * @deprecated
+             * @description Filter by original file name
+             */
             originalFileName?: string;
-            /** @description Filter by original file path */
+            /**
+             * @deprecated
+             * @description Filter by original file path
+             */
             originalPath?: string;
-            /** @description Page number */
+            /**
+             * @deprecated
+             * @description Page number
+             */
             page?: number;
-            /** @description Filter by person IDs */
+            /**
+             * @deprecated
+             * @description Filter by person IDs
+             */
             personIds?: string[];
-            /** @description Filter by preview file path */
+            /**
+             * @deprecated
+             * @description Filter by preview file path
+             */
             previewPath?: string;
-            /** @description Filter by rating [1-5], or null for unrated */
+            /**
+             * @deprecated
+             * @description Filter by rating [1-5], or null for unrated
+             */
             rating?: number | null;
-            /** @description Number of results to return */
-            size?: number;
-            /** @description Filter by state/province name */
+            /**
+             * @description Number of results to return
+             * @default 250
+             */
+            size: number;
+            /**
+             * @deprecated
+             * @description Filter by state/province name
+             */
             state?: string | null;
-            /** @description Filter by tag IDs */
+            /**
+             * @deprecated
+             * @description Filter by tag IDs
+             */
             tagIds?: string[] | null;
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by taken date (after)
              * @example 2024-01-01T00:00:00.000Z
              */
             takenAfter?: string;
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by taken date (before)
              * @example 2024-01-01T00:00:00.000Z
              */
             takenBefore?: string;
-            /** @description Filter by thumbnail file path */
+            /**
+             * @deprecated
+             * @description Filter by thumbnail file path
+             */
             thumbnailPath?: string;
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by trash date (after)
              * @example 2024-01-01T00:00:00.000Z
              */
             trashedAfter?: string;
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by trash date (before)
              * @example 2024-01-01T00:00:00.000Z
              */
             trashedBefore?: string;
+            /** @deprecated */
             type?: components["schemas"]["AssetTypeEnum"];
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by update date (after)
              * @example 2024-01-01T00:00:00.000Z
              */
             updatedAfter?: string;
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by update date (before)
              * @example 2024-01-01T00:00:00.000Z
              */
             updatedBefore?: string;
+            /** @deprecated */
             visibility?: components["schemas"]["AssetVisibility"];
-            /** @description Include deleted assets */
+            /**
+             * @deprecated
+             * @description Include deleted assets
+             */
             withDeleted?: boolean;
             /** @description Include EXIF data in response */
             withExif?: boolean;
@@ -5465,7 +6553,10 @@ export interface components {
             };
             /** @description Notification description */
             description?: string;
-            /** @description Notification ID */
+            /**
+             * Format: uuid
+             * @description Notification ID
+             */
             id: string;
             level: components["schemas"]["NotificationLevel"];
             /**
@@ -5487,7 +6578,7 @@ export interface components {
          * @description Notification type
          * @enum {string}
          */
-        NotificationType: "JobFailed" | "BackupFailed" | "SystemMessage" | "AlbumInvite" | "AlbumUpdate" | "Custom";
+        NotificationType: "JobFailed" | "BackupFailed" | "SystemMessage" | "AlbumInvite" | "AlbumUpdate" | "ClusterGroupRequest" | "Custom";
         NotificationUpdateAllDto: {
             /** @description Notification IDs to update */
             ids: string[];
@@ -5505,6 +6596,26 @@ export interface components {
              * @example 2024-01-01T00:00:00.000Z
              */
             readAt?: string | null;
+        };
+        NumberFilter: {
+            eq?: number;
+            gt?: number;
+            gte?: number;
+            in?: number[];
+            lt?: number;
+            lte?: number;
+            ne?: number;
+            notIn?: number[];
+        };
+        NumberFilterNullable: {
+            eq?: number | null;
+            gt?: number;
+            gte?: number;
+            in?: number[];
+            lt?: number;
+            lte?: number;
+            ne?: number | null;
+            notIn?: number[];
         };
         OAuthAuthorizeResponseDto: {
             /** @description OAuth authorization URL */
@@ -5535,24 +6646,6 @@ export interface components {
          * @enum {string}
          */
         OAuthTokenEndpointAuthMethod: "client_secret_post" | "client_secret_basic";
-        OcrConfig: {
-            /** @description Whether the task is enabled */
-            enabled: boolean;
-            /** @description Maximum resolution for OCR processing */
-            maxResolution: number;
-            /**
-             * Format: double
-             * @description Minimum confidence score for text detection
-             */
-            minDetectionScore: number;
-            /**
-             * Format: double
-             * @description Minimum confidence score for text recognition
-             */
-            minRecognitionScore: number;
-            /** @description Name of the model to use */
-            modelName: string;
-        };
         OnThisDayDto: {
             /** @description Year for on this day memory */
             year: number;
@@ -5649,7 +6742,10 @@ export interface components {
              * @description Asset ID used for feature face thumbnail
              */
             featureFaceAssetId?: string;
-            /** @description Person ID */
+            /**
+             * Format: uuid
+             * @description Person ID
+             */
             id: string;
             /** @description Mark as favorite */
             isFavorite?: boolean;
@@ -5662,7 +6758,7 @@ export interface components {
          * @description List of permissions
          * @enum {string}
          */
-        Permission: "all" | "activity.create" | "activity.read" | "activity.update" | "activity.delete" | "activity.statistics" | "apiKey.create" | "apiKey.read" | "apiKey.update" | "apiKey.delete" | "asset.read" | "asset.update" | "asset.delete" | "asset.statistics" | "asset.share" | "asset.view" | "asset.download" | "asset.upload" | "asset.copy" | "asset.derive" | "asset.edit.get" | "asset.edit.create" | "asset.edit.delete" | "album.create" | "album.read" | "album.update" | "album.delete" | "album.statistics" | "album.share" | "album.download" | "albumAsset.create" | "albumAsset.delete" | "albumUser.create" | "albumUser.update" | "albumUser.delete" | "auth.changePassword" | "authDevice.delete" | "archive.read" | "backup.list" | "backup.download" | "backup.upload" | "backup.delete" | "duplicate.read" | "duplicate.delete" | "face.create" | "face.read" | "face.update" | "face.delete" | "folder.read" | "job.create" | "job.read" | "library.create" | "library.read" | "library.update" | "library.delete" | "library.statistics" | "timeline.read" | "timeline.download" | "maintenance" | "map.read" | "map.search" | "memory.create" | "memory.read" | "memory.update" | "memory.delete" | "memory.statistics" | "memoryAsset.create" | "memoryAsset.delete" | "notification.create" | "notification.read" | "notification.update" | "notification.delete" | "partner.create" | "partner.read" | "partner.update" | "partner.delete" | "person.create" | "person.read" | "person.update" | "person.delete" | "person.statistics" | "person.merge" | "person.reassign" | "pinCode.create" | "pinCode.update" | "pinCode.delete" | "plugin.create" | "plugin.read" | "plugin.update" | "plugin.delete" | "server.about" | "server.apkLinks" | "server.storage" | "server.statistics" | "server.versionCheck" | "serverLicense.read" | "serverLicense.update" | "serverLicense.delete" | "session.create" | "session.read" | "session.update" | "session.delete" | "session.lock" | "sharedLink.create" | "sharedLink.read" | "sharedLink.update" | "sharedLink.delete" | "stack.create" | "stack.read" | "stack.update" | "stack.delete" | "sync.stream" | "syncCheckpoint.read" | "syncCheckpoint.update" | "syncCheckpoint.delete" | "systemConfig.read" | "systemConfig.update" | "systemMetadata.read" | "systemMetadata.update" | "tag.create" | "tag.read" | "tag.update" | "tag.delete" | "tag.asset" | "user.read" | "user.update" | "userLicense.create" | "userLicense.read" | "userLicense.update" | "userLicense.delete" | "userOnboarding.read" | "userOnboarding.update" | "userOnboarding.delete" | "userPreference.read" | "userPreference.update" | "userProfileImage.create" | "userProfileImage.read" | "userProfileImage.update" | "userProfileImage.delete" | "queue.read" | "queue.update" | "queueJob.create" | "queueJob.read" | "queueJob.update" | "queueJob.delete" | "workflow.create" | "workflow.read" | "workflow.update" | "workflow.delete" | "adminUser.create" | "adminUser.read" | "adminUser.update" | "adminUser.delete" | "adminSession.read" | "adminAuth.unlinkAll";
+        Permission: "all" | "activity.create" | "activity.read" | "activity.update" | "activity.delete" | "activity.statistics" | "apiKey.create" | "apiKey.read" | "apiKey.update" | "apiKey.delete" | "apiKey.rotate" | "asset.read" | "asset.update" | "asset.delete" | "asset.statistics" | "asset.share" | "asset.view" | "asset.download" | "asset.upload" | "asset.copy" | "asset.derive" | "assetFile.read" | "assetFile.delete" | "assetFile.download" | "asset.edit.get" | "asset.edit.create" | "asset.edit.delete" | "album.create" | "album.read" | "album.update" | "album.delete" | "album.statistics" | "album.share" | "album.download" | "albumAsset.create" | "albumAsset.delete" | "albumUser.create" | "albumUser.update" | "albumUser.delete" | "auth.changePassword" | "authDevice.delete" | "archive.read" | "backup.list" | "backup.download" | "backup.upload" | "backup.delete" | "clusterGroup.read" | "clusterGroup.leave" | "clusterGroupRequest.create" | "clusterGroupRequest.read" | "clusterGroupRequest.delete" | "adminConfig.read" | "adminConfig.update" | "userConfig.read" | "duplicate.read" | "duplicate.delete" | "face.create" | "face.read" | "face.update" | "face.delete" | "folder.read" | "job.create" | "job.read" | "library.create" | "library.read" | "library.update" | "library.delete" | "library.statistics" | "timeline.read" | "timeline.download" | "maintenance" | "map.read" | "map.search" | "memory.create" | "memory.read" | "memory.update" | "memory.delete" | "memory.statistics" | "memoryAsset.create" | "memoryAsset.delete" | "notification.create" | "notification.read" | "notification.update" | "notification.delete" | "partner.create" | "partner.read" | "partner.update" | "partner.delete" | "person.create" | "person.read" | "person.update" | "person.delete" | "person.statistics" | "person.merge" | "person.reassign" | "pinCode.create" | "pinCode.update" | "pinCode.delete" | "plugin.create" | "plugin.read" | "plugin.update" | "plugin.delete" | "server.about" | "server.apkLinks" | "server.storage" | "server.statistics" | "server.versionCheck" | "serverLicense.read" | "serverLicense.update" | "serverLicense.delete" | "session.create" | "session.read" | "session.update" | "session.delete" | "session.lock" | "sharedLink.create" | "sharedLink.read" | "sharedLink.update" | "sharedLink.delete" | "stack.create" | "stack.read" | "stack.update" | "stack.delete" | "sync.stream" | "syncCheckpoint.read" | "syncCheckpoint.update" | "syncCheckpoint.delete" | "systemConfig.read" | "systemConfig.update" | "systemMetadata.read" | "systemMetadata.update" | "tag.create" | "tag.read" | "tag.update" | "tag.delete" | "tag.asset" | "user.read" | "user.update" | "userLicense.create" | "userLicense.read" | "userLicense.update" | "userLicense.delete" | "userOnboarding.read" | "userOnboarding.update" | "userOnboarding.delete" | "userPreference.read" | "userPreference.update" | "userProfileImage.create" | "userProfileImage.read" | "userProfileImage.update" | "userProfileImage.delete" | "queue.read" | "queue.update" | "queueJob.create" | "queueJob.read" | "queueJob.update" | "queueJob.delete" | "workflow.create" | "workflow.read" | "workflow.update" | "workflow.delete" | "workflow.logs" | "adminUser.create" | "adminUser.read" | "adminUser.update" | "adminUser.delete" | "adminSession.read" | "adminAuth.unlinkAll";
         PersonCreateDto: {
             /**
              * Format: date
@@ -5686,7 +6782,10 @@ export interface components {
             birthDate: string | null;
             /** @description Person color (hex) */
             color?: string;
-            /** @description Person ID */
+            /**
+             * Format: uuid
+             * @description Person ID
+             */
             id: string;
             /** @description Is favorite */
             isFavorite?: boolean;
@@ -5794,7 +6893,10 @@ export interface components {
             createdAt: string;
             /** @description Plugin description */
             description: string;
-            /** @description Plugin ID */
+            /**
+             * Format: uuid
+             * @description Plugin ID
+             */
             id: string;
             /** @description Plugin methods */
             methods: components["schemas"]["PluginMethodResponseDto"][];
@@ -5830,6 +6932,33 @@ export interface components {
             enabled?: boolean;
             /** @description Step plugin method */
             method: string;
+        };
+        /** @description Configuration properties that are visible to everyone */
+        PublicConfigDto: {
+            oauth: components["schemas"]["PublicConfigOAuthDto"];
+            passwordLogin: components["schemas"]["PublicConfigPasswordLoginDto"];
+            server: components["schemas"]["PublicConfigServerDto"];
+            theme: components["schemas"]["PublicConfigThemeDto"];
+        };
+        PublicConfigOAuthDto: {
+            /** @description Auto launch */
+            autoLaunch: boolean;
+            /** @description Button text */
+            buttonText: string;
+            /** @description Enabled */
+            enabled: boolean;
+        };
+        PublicConfigPasswordLoginDto: {
+            /** @description Enabled */
+            enabled: boolean;
+        };
+        PublicConfigServerDto: {
+            /** @description Login page message */
+            loginPageMessage: string;
+        };
+        PublicConfigThemeDto: {
+            /** @description Custom CSS for theming */
+            customCss: string;
         };
         PurchaseResponse: {
             /** @description Date until which to hide buy button */
@@ -5934,96 +7063,162 @@ export interface components {
             workflow: components["schemas"]["QueueResponseLegacyDto"];
         };
         RandomSearchDto: {
-            /** @description Filter by album IDs */
+            /**
+             * @deprecated
+             * @description Filter by album IDs
+             */
             albumIds?: string[];
-            /** @description Filter by city name */
+            /**
+             * @deprecated
+             * @description Filter by city name
+             */
             city?: string | null;
-            /** @description Filter by country name */
+            /**
+             * @deprecated
+             * @description Filter by country name
+             */
             country?: string | null;
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by creation date (after)
              * @example 2024-01-01T00:00:00.000Z
              */
             createdAfter?: string;
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by creation date (before)
              * @example 2024-01-01T00:00:00.000Z
              */
             createdBefore?: string;
-            /** @description Filter by encoded status */
+            filter?: components["schemas"]["SearchFilter"];
+            /**
+             * @deprecated
+             * @description Filter by encoded status
+             */
             isEncoded?: boolean;
-            /** @description Filter by favorite status */
+            /**
+             * @deprecated
+             * @description Filter by favorite status
+             */
             isFavorite?: boolean;
-            /** @description Filter by motion photo status */
+            /**
+             * @deprecated
+             * @description Filter by motion photo status
+             */
             isMotion?: boolean;
-            /** @description Filter assets not in any album */
+            /**
+             * @deprecated
+             * @description Filter assets not in any album
+             */
             isNotInAlbum?: boolean;
-            /** @description Filter by offline status */
+            /**
+             * @deprecated
+             * @description Filter by offline status
+             */
             isOffline?: boolean;
-            /** @description Filter by lens model */
+            /**
+             * @deprecated
+             * @description Filter by lens model
+             */
             lensModel?: string | null;
             /**
              * Format: uuid
+             * @deprecated
              * @description Library ID to filter by
              */
             libraryId?: string | null;
-            /** @description Filter by camera make */
+            /**
+             * @deprecated
+             * @description Filter by camera make
+             */
             make?: string | null;
-            /** @description Filter by camera model */
+            /**
+             * @deprecated
+             * @description Filter by camera model
+             */
             model?: string | null;
-            /** @description Filter by OCR text content */
+            /**
+             * @deprecated
+             * @description Filter by OCR text content
+             */
             ocr?: string;
-            /** @description Filter by person IDs */
+            /**
+             * @deprecated
+             * @description Filter by person IDs
+             */
             personIds?: string[];
-            /** @description Filter by rating [1-5], or null for unrated */
+            /**
+             * @deprecated
+             * @description Filter by rating [1-5], or null for unrated
+             */
             rating?: number | null;
-            /** @description Number of results to return */
-            size?: number;
-            /** @description Filter by state/province name */
+            /**
+             * @description Number of results to return
+             * @default 250
+             */
+            size: number;
+            /**
+             * @deprecated
+             * @description Filter by state/province name
+             */
             state?: string | null;
-            /** @description Filter by tag IDs */
+            /**
+             * @deprecated
+             * @description Filter by tag IDs
+             */
             tagIds?: string[] | null;
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by taken date (after)
              * @example 2024-01-01T00:00:00.000Z
              */
             takenAfter?: string;
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by taken date (before)
              * @example 2024-01-01T00:00:00.000Z
              */
             takenBefore?: string;
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by trash date (after)
              * @example 2024-01-01T00:00:00.000Z
              */
             trashedAfter?: string;
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by trash date (before)
              * @example 2024-01-01T00:00:00.000Z
              */
             trashedBefore?: string;
+            /** @deprecated */
             type?: components["schemas"]["AssetTypeEnum"];
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by update date (after)
              * @example 2024-01-01T00:00:00.000Z
              */
             updatedAfter?: string;
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by update date (before)
              * @example 2024-01-01T00:00:00.000Z
              */
             updatedBefore?: string;
+            /** @deprecated */
             visibility?: components["schemas"]["AssetVisibility"];
-            /** @description Include deleted assets */
+            /**
+             * @deprecated
+             * @description Include deleted assets
+             */
             withDeleted?: boolean;
             /** @description Include EXIF data in response */
             withExif?: boolean;
@@ -6050,6 +7245,14 @@ export interface components {
          * @enum {string}
          */
         ReactionType: "comment" | "like";
+        RecentlyAddedResponse: {
+            /** @description Whether the recently added page appears in the web sidebar */
+            sidebarWeb: boolean;
+        };
+        RecentlyAddedUpdate: {
+            /** @description Whether the recently added page appears in the web sidebar */
+            sidebarWeb?: boolean;
+        };
         /**
          * @description Release channel
          * @enum {string}
@@ -6090,7 +7293,12 @@ export interface components {
             count: number;
             facets: components["schemas"]["SearchFacetResponseDto"][];
             items: components["schemas"]["AssetResponseDto"][];
-            /** @description Next page token */
+            /** @description Cursor for the next page of results */
+            nextCursor: string | null;
+            /**
+             * @deprecated
+             * @description Next page token
+             */
             nextPage: string | null;
             /** @description Total number of matching assets */
             total: number;
@@ -6116,6 +7324,83 @@ export interface components {
             /** @description Facet field name */
             fieldName: string;
         };
+        SearchFilter: {
+            albumIds?: components["schemas"]["IdsFilter"];
+            checksum?: components["schemas"]["StringFilter"];
+            city?: components["schemas"]["StringFilterNullable"];
+            country?: components["schemas"]["StringFilterNullable"];
+            createdAt?: components["schemas"]["DateFilter"];
+            description?: components["schemas"]["StringPatternFilter"];
+            encodedVideoPath?: components["schemas"]["StringFilter"];
+            fileSizeInBytes?: components["schemas"]["NumberFilter"];
+            hasAlbums?: components["schemas"]["BoolFilter"];
+            hasPeople?: components["schemas"]["BoolFilter"];
+            hasTags?: components["schemas"]["BoolFilter"];
+            id?: components["schemas"]["IdFilter"];
+            isEncoded?: components["schemas"]["BoolFilter"];
+            isFavorite?: components["schemas"]["BoolFilter"];
+            isMotion?: components["schemas"]["BoolFilter"];
+            isOffline?: components["schemas"]["BoolFilter"];
+            lensModel?: components["schemas"]["StringFilterNullable"];
+            libraryId?: components["schemas"]["IdFilterNullable"];
+            make?: components["schemas"]["StringFilterNullable"];
+            model?: components["schemas"]["StringFilterNullable"];
+            ocr?: components["schemas"]["StringSimilarityFilter"];
+            or?: components["schemas"]["SearchFilterBranch"][];
+            originalFileName?: components["schemas"]["StringPatternFilter"];
+            originalPath?: components["schemas"]["StringPatternFilter"];
+            personIds?: components["schemas"]["IdsFilter"];
+            rating?: components["schemas"]["NumberFilterNullable"];
+            state?: components["schemas"]["StringFilterNullable"];
+            tagIds?: components["schemas"]["IdsFilter"];
+            takenAt?: components["schemas"]["DateFilter"];
+            trashedAt?: components["schemas"]["DateFilterNullable"];
+            type?: components["schemas"]["EnumFilterAssetType"];
+            updatedAt?: components["schemas"]["DateFilter"];
+            visibility?: components["schemas"]["EnumFilterAssetVisibility"];
+        };
+        SearchFilterBranch: {
+            albumIds?: components["schemas"]["IdsFilter"];
+            checksum?: components["schemas"]["StringFilter"];
+            city?: components["schemas"]["StringFilterNullable"];
+            country?: components["schemas"]["StringFilterNullable"];
+            createdAt?: components["schemas"]["DateFilter"];
+            description?: components["schemas"]["StringPatternFilter"];
+            encodedVideoPath?: components["schemas"]["StringFilter"];
+            fileSizeInBytes?: components["schemas"]["NumberFilter"];
+            hasAlbums?: components["schemas"]["BoolFilter"];
+            hasPeople?: components["schemas"]["BoolFilter"];
+            hasTags?: components["schemas"]["BoolFilter"];
+            id?: components["schemas"]["IdFilter"];
+            isEncoded?: components["schemas"]["BoolFilter"];
+            isFavorite?: components["schemas"]["BoolFilter"];
+            isMotion?: components["schemas"]["BoolFilter"];
+            isOffline?: components["schemas"]["BoolFilter"];
+            lensModel?: components["schemas"]["StringFilterNullable"];
+            libraryId?: components["schemas"]["IdFilterNullable"];
+            make?: components["schemas"]["StringFilterNullable"];
+            model?: components["schemas"]["StringFilterNullable"];
+            ocr?: components["schemas"]["StringSimilarityFilter"];
+            originalFileName?: components["schemas"]["StringPatternFilter"];
+            originalPath?: components["schemas"]["StringPatternFilter"];
+            personIds?: components["schemas"]["IdsFilter"];
+            rating?: components["schemas"]["NumberFilterNullable"];
+            state?: components["schemas"]["StringFilterNullable"];
+            tagIds?: components["schemas"]["IdsFilter"];
+            takenAt?: components["schemas"]["DateFilter"];
+            trashedAt?: components["schemas"]["DateFilterNullable"];
+            type?: components["schemas"]["EnumFilterAssetType"];
+            updatedAt?: components["schemas"]["DateFilter"];
+            visibility?: components["schemas"]["EnumFilterAssetVisibility"];
+        };
+        SearchOrder: {
+            /** @default desc */
+            direction: components["schemas"]["AssetOrder"];
+            /** @default fileCreatedAt */
+            field: components["schemas"]["SearchOrderField"];
+        };
+        /** @enum {string} */
+        SearchOrderField: "fileCreatedAt" | "localDateTime" | "fileSizeInBytes" | "rating";
         SearchResponseDto: {
             albums: components["schemas"]["SearchAlbumResponseDto"];
             assets: components["schemas"]["SearchAssetResponseDto"];
@@ -6200,6 +7485,11 @@ export interface components {
             mapLightStyleUrl: string;
             /** @description People min faces server default */
             minFaces: number;
+            /**
+             * @description OAuth account management URL
+             * @default
+             */
+            oauthAccountManagementUrl: string;
             /** @description OAuth button text */
             oauthButtonText: string;
             /** @description Whether public user registration is enabled */
@@ -6295,7 +7585,10 @@ export interface components {
              * @example 2024-01-01T00:00:00.000Z
              */
             createdAt: string;
-            /** @description Version history entry ID */
+            /**
+             * Format: uuid
+             * @description Version history entry ID
+             */
             id: string;
             /** @description Version string */
             version: string;
@@ -6331,7 +7624,10 @@ export interface components {
             deviceType: string;
             /** @description Expiration date */
             expiresAt?: string;
-            /** @description Session ID */
+            /**
+             * Format: uuid
+             * @description Session ID
+             */
             id: string;
             /** @description Is pending sync reset */
             isPendingSyncReset: boolean;
@@ -6353,7 +7649,10 @@ export interface components {
             deviceType: string;
             /** @description Expiration date */
             expiresAt?: string;
-            /** @description Session ID */
+            /**
+             * Format: uuid
+             * @description Session ID
+             */
             id: string;
             /** @description Is pending sync reset */
             isPendingSyncReset: boolean;
@@ -6401,10 +7700,9 @@ export interface components {
             /**
              * Format: date-time
              * @description Expiration date
-             * @default null
              * @example 2024-01-01T00:00:00.000Z
              */
-            expiresAt: string | null;
+            expiresAt?: string | null;
             /** @description Link password */
             password?: string | null;
             /**
@@ -6465,7 +7763,10 @@ export interface components {
              * @example 2024-01-01T00:00:00.000Z
              */
             expiresAt: string | null;
-            /** @description Shared link ID */
+            /**
+             * Format: uuid
+             * @description Shared link ID
+             */
             id: string;
             /** @description Encryption key (base64url) */
             key: string;
@@ -6476,7 +7777,10 @@ export interface components {
             /** @description Custom URL slug */
             slug: string | null;
             type: components["schemas"]["SharedLinkType"];
-            /** @description Owner user ID */
+            /**
+             * Format: uuid
+             * @description Owner user ID
+             */
             userId: string;
         };
         /**
@@ -6515,52 +7819,98 @@ export interface components {
             password: string;
         };
         SmartSearchDto: {
-            /** @description Filter by album IDs */
+            /**
+             * @deprecated
+             * @description Filter by album IDs
+             */
             albumIds?: string[];
-            /** @description Filter by city name */
+            /**
+             * @deprecated
+             * @description Filter by city name
+             */
             city?: string | null;
-            /** @description Filter by country name */
+            /**
+             * @deprecated
+             * @description Filter by country name
+             */
             country?: string | null;
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by creation date (after)
              * @example 2024-01-01T00:00:00.000Z
              */
             createdAfter?: string;
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by creation date (before)
              * @example 2024-01-01T00:00:00.000Z
              */
             createdBefore?: string;
-            /** @description Filter by encoded status */
+            filter?: components["schemas"]["SearchFilter"];
+            /**
+             * @deprecated
+             * @description Filter by encoded status
+             */
             isEncoded?: boolean;
-            /** @description Filter by favorite status */
+            /**
+             * @deprecated
+             * @description Filter by favorite status
+             */
             isFavorite?: boolean;
-            /** @description Filter by motion photo status */
+            /**
+             * @deprecated
+             * @description Filter by motion photo status
+             */
             isMotion?: boolean;
-            /** @description Filter assets not in any album */
+            /**
+             * @deprecated
+             * @description Filter assets not in any album
+             */
             isNotInAlbum?: boolean;
-            /** @description Filter by offline status */
+            /**
+             * @deprecated
+             * @description Filter by offline status
+             */
             isOffline?: boolean;
             /** @description Search language code */
             language?: string;
-            /** @description Filter by lens model */
+            /**
+             * @deprecated
+             * @description Filter by lens model
+             */
             lensModel?: string | null;
             /**
              * Format: uuid
+             * @deprecated
              * @description Library ID to filter by
              */
             libraryId?: string | null;
-            /** @description Filter by camera make */
+            /**
+             * @deprecated
+             * @description Filter by camera make
+             */
             make?: string | null;
-            /** @description Filter by camera model */
+            /**
+             * @deprecated
+             * @description Filter by camera model
+             */
             model?: string | null;
-            /** @description Filter by OCR text content */
+            /**
+             * @deprecated
+             * @description Filter by OCR text content
+             */
             ocr?: string;
-            /** @description Page number */
+            /**
+             * @deprecated
+             * @description Page number
+             */
             page?: number;
-            /** @description Filter by person IDs */
+            /**
+             * @deprecated
+             * @description Filter by person IDs
+             */
             personIds?: string[];
             /** @description Natural language search query */
             query?: string;
@@ -6569,53 +7919,76 @@ export interface components {
              * @description Asset ID to use as search reference
              */
             queryAssetId?: string;
-            /** @description Filter by rating [1-5], or null for unrated */
+            /**
+             * @deprecated
+             * @description Filter by rating [1-5], or null for unrated
+             */
             rating?: number | null;
-            /** @description Number of results to return */
-            size?: number;
-            /** @description Filter by state/province name */
+            /**
+             * @description Number of results to return
+             * @default 100
+             */
+            size: number;
+            /**
+             * @deprecated
+             * @description Filter by state/province name
+             */
             state?: string | null;
-            /** @description Filter by tag IDs */
+            /**
+             * @deprecated
+             * @description Filter by tag IDs
+             */
             tagIds?: string[] | null;
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by taken date (after)
              * @example 2024-01-01T00:00:00.000Z
              */
             takenAfter?: string;
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by taken date (before)
              * @example 2024-01-01T00:00:00.000Z
              */
             takenBefore?: string;
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by trash date (after)
              * @example 2024-01-01T00:00:00.000Z
              */
             trashedAfter?: string;
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by trash date (before)
              * @example 2024-01-01T00:00:00.000Z
              */
             trashedBefore?: string;
+            /** @deprecated */
             type?: components["schemas"]["AssetTypeEnum"];
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by update date (after)
              * @example 2024-01-01T00:00:00.000Z
              */
             updatedAfter?: string;
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by update date (before)
              * @example 2024-01-01T00:00:00.000Z
              */
             updatedBefore?: string;
+            /** @deprecated */
             visibility?: components["schemas"]["AssetVisibility"];
-            /** @description Include deleted assets */
+            /**
+             * @deprecated
+             * @description Include deleted assets
+             */
             withDeleted?: boolean;
             /** @description Include EXIF data in response */
             withExif?: boolean;
@@ -6632,9 +8005,15 @@ export interface components {
         /** @description Stack response */
         StackResponseDto: {
             assets: components["schemas"]["AssetResponseDto"][];
-            /** @description Stack ID */
+            /**
+             * Format: uuid
+             * @description Stack ID
+             */
             id: string;
-            /** @description Primary asset ID */
+            /**
+             * Format: uuid
+             * @description Primary asset ID
+             */
             primaryAssetId: string;
         };
         StackUpdateDto: {
@@ -6645,94 +8024,157 @@ export interface components {
             primaryAssetId?: string;
         };
         StatisticsSearchDto: {
-            /** @description Filter by album IDs */
+            /**
+             * @deprecated
+             * @description Filter by album IDs
+             */
             albumIds?: string[];
-            /** @description Filter by city name */
+            /**
+             * @deprecated
+             * @description Filter by city name
+             */
             city?: string | null;
-            /** @description Filter by country name */
+            /**
+             * @deprecated
+             * @description Filter by country name
+             */
             country?: string | null;
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by creation date (after)
              * @example 2024-01-01T00:00:00.000Z
              */
             createdAfter?: string;
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by creation date (before)
              * @example 2024-01-01T00:00:00.000Z
              */
             createdBefore?: string;
-            /** @description Filter by description text */
+            /**
+             * @deprecated
+             * @description Filter by description text
+             */
             description?: string;
-            /** @description Filter by encoded status */
+            filter?: components["schemas"]["SearchFilter"];
+            /**
+             * @deprecated
+             * @description Filter by encoded status
+             */
             isEncoded?: boolean;
-            /** @description Filter by favorite status */
+            /**
+             * @deprecated
+             * @description Filter by favorite status
+             */
             isFavorite?: boolean;
-            /** @description Filter by motion photo status */
+            /**
+             * @deprecated
+             * @description Filter by motion photo status
+             */
             isMotion?: boolean;
-            /** @description Filter assets not in any album */
+            /**
+             * @deprecated
+             * @description Filter assets not in any album
+             */
             isNotInAlbum?: boolean;
-            /** @description Filter by offline status */
+            /**
+             * @deprecated
+             * @description Filter by offline status
+             */
             isOffline?: boolean;
-            /** @description Filter by lens model */
+            /**
+             * @deprecated
+             * @description Filter by lens model
+             */
             lensModel?: string | null;
             /**
              * Format: uuid
+             * @deprecated
              * @description Library ID to filter by
              */
             libraryId?: string | null;
-            /** @description Filter by camera make */
+            /**
+             * @deprecated
+             * @description Filter by camera make
+             */
             make?: string | null;
-            /** @description Filter by camera model */
+            /**
+             * @deprecated
+             * @description Filter by camera model
+             */
             model?: string | null;
-            /** @description Filter by OCR text content */
+            /**
+             * @deprecated
+             * @description Filter by OCR text content
+             */
             ocr?: string;
-            /** @description Filter by person IDs */
+            /**
+             * @deprecated
+             * @description Filter by person IDs
+             */
             personIds?: string[];
-            /** @description Filter by rating [1-5], or null for unrated */
+            /**
+             * @deprecated
+             * @description Filter by rating [1-5], or null for unrated
+             */
             rating?: number | null;
-            /** @description Filter by state/province name */
+            /**
+             * @deprecated
+             * @description Filter by state/province name
+             */
             state?: string | null;
-            /** @description Filter by tag IDs */
+            /**
+             * @deprecated
+             * @description Filter by tag IDs
+             */
             tagIds?: string[] | null;
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by taken date (after)
              * @example 2024-01-01T00:00:00.000Z
              */
             takenAfter?: string;
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by taken date (before)
              * @example 2024-01-01T00:00:00.000Z
              */
             takenBefore?: string;
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by trash date (after)
              * @example 2024-01-01T00:00:00.000Z
              */
             trashedAfter?: string;
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by trash date (before)
              * @example 2024-01-01T00:00:00.000Z
              */
             trashedBefore?: string;
+            /** @deprecated */
             type?: components["schemas"]["AssetTypeEnum"];
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by update date (after)
              * @example 2024-01-01T00:00:00.000Z
              */
             updatedAfter?: string;
             /**
              * Format: date-time
+             * @deprecated
              * @description Filter by update date (before)
              * @example 2024-01-01T00:00:00.000Z
              */
             updatedBefore?: string;
+            /** @deprecated */
             visibility?: components["schemas"]["AssetVisibility"];
         };
         /**
@@ -6740,6 +8182,31 @@ export interface components {
          * @enum {string}
          */
         StorageFolder: "encoded-video" | "library" | "upload" | "profile" | "thumbs" | "backups";
+        StringFilter: {
+            eq?: string;
+            in?: string[];
+            ne?: string;
+            notIn?: string[];
+        };
+        StringFilterNullable: {
+            eq?: string | null;
+            in?: string[];
+            ne?: string | null;
+            notIn?: string[];
+        };
+        StringPatternFilter: {
+            endsWith?: string;
+            eq?: string | null;
+            in?: string[];
+            like?: string;
+            ne?: string | null;
+            notIn?: string[];
+            notLike?: string;
+            startsWith?: string;
+        };
+        StringSimilarityFilter: {
+            matches: string;
+        };
         SyncAckDeleteDto: {
             /** @description Sync entity types to delete acks for */
             types?: components["schemas"]["SyncEntityType"][];
@@ -6755,32 +8222,59 @@ export interface components {
         };
         SyncAckV1: Record<string, never>;
         SyncAlbumDeleteV1: {
-            /** @description Album ID */
+            /**
+             * Format: uuid
+             * @description Album ID
+             */
             albumId: string;
         };
         SyncAlbumToAssetDeleteV1: {
-            /** @description Album ID */
+            /**
+             * Format: uuid
+             * @description Album ID
+             */
             albumId: string;
-            /** @description Asset ID */
+            /**
+             * Format: uuid
+             * @description Asset ID
+             */
             assetId: string;
         };
         SyncAlbumToAssetV1: {
-            /** @description Album ID */
+            /**
+             * Format: uuid
+             * @description Album ID
+             */
             albumId: string;
-            /** @description Asset ID */
+            /**
+             * Format: uuid
+             * @description Asset ID
+             */
             assetId: string;
         };
         SyncAlbumUserDeleteV1: {
-            /** @description Album ID */
+            /**
+             * Format: uuid
+             * @description Album ID
+             */
             albumId: string;
-            /** @description User ID */
+            /**
+             * Format: uuid
+             * @description User ID
+             */
             userId: string;
         };
         SyncAlbumUserV1: {
-            /** @description Album ID */
+            /**
+             * Format: uuid
+             * @description Album ID
+             */
             albumId: string;
             role: components["schemas"]["AlbumUserRole"];
-            /** @description User ID */
+            /**
+             * Format: uuid
+             * @description User ID
+             */
             userId: string;
         };
         SyncAlbumV1: {
@@ -6792,14 +8286,20 @@ export interface components {
             createdAt: string;
             /** @description Album description */
             description: string;
-            /** @description Album ID */
+            /**
+             * Format: uuid
+             * @description Album ID
+             */
             id: string;
             /** @description Is activity enabled */
             isActivityEnabled: boolean;
             /** @description Album name */
             name: string;
             order: components["schemas"]["AssetOrder"];
-            /** @description Owner ID */
+            /**
+             * Format: uuid
+             * @description Owner ID
+             */
             ownerId: string;
             /** @description Thumbnail asset ID */
             thumbnailAssetId: string | null;
@@ -6819,7 +8319,10 @@ export interface components {
             createdAt: string;
             /** @description Album description */
             description: string;
-            /** @description Album ID */
+            /**
+             * Format: uuid
+             * @description Album ID
+             */
             id: string;
             /** @description Is activity enabled */
             isActivityEnabled: boolean;
@@ -6836,18 +8339,30 @@ export interface components {
             updatedAt: string;
         };
         SyncAssetDeleteV1: {
-            /** @description Asset ID */
+            /**
+             * Format: uuid
+             * @description Asset ID
+             */
             assetId: string;
         };
         SyncAssetEditDeleteV1: {
-            /** @description Edit ID */
+            /**
+             * Format: uuid
+             * @description Edit ID
+             */
             editId: string;
         };
         SyncAssetEditV1: {
             action: components["schemas"]["AssetEditAction"];
-            /** @description Asset ID */
+            /**
+             * Format: uuid
+             * @description Asset ID
+             */
             assetId: string;
-            /** @description Edit ID */
+            /**
+             * Format: uuid
+             * @description Edit ID
+             */
             id: string;
             /** @description Edit parameters */
             parameters: {
@@ -6857,7 +8372,10 @@ export interface components {
             sequence: number;
         };
         SyncAssetExifV1: {
-            /** @description Asset ID */
+            /**
+             * Format: uuid
+             * @description Asset ID
+             */
             assetId: string;
             /** @description City */
             city: string | null;
@@ -6932,11 +8450,17 @@ export interface components {
             timeZone: string | null;
         };
         SyncAssetFaceDeleteV1: {
-            /** @description Asset face ID */
+            /**
+             * Format: uuid
+             * @description Asset face ID
+             */
             assetFaceId: string;
         };
         SyncAssetFaceV1: {
-            /** @description Asset ID */
+            /**
+             * Format: uuid
+             * @description Asset ID
+             */
             assetId: string;
             /** @description Bounding box X1 */
             boundingBoxX1: number;
@@ -6946,7 +8470,10 @@ export interface components {
             boundingBoxY1: number;
             /** @description Bounding box Y2 */
             boundingBoxY2: number;
-            /** @description Asset face ID */
+            /**
+             * Format: uuid
+             * @description Asset face ID
+             */
             id: string;
             /** @description Image height */
             imageHeight: number;
@@ -6958,7 +8485,10 @@ export interface components {
             sourceType: string;
         };
         SyncAssetFaceV2: {
-            /** @description Asset ID */
+            /**
+             * Format: uuid
+             * @description Asset ID
+             */
             assetId: string;
             /** @description Bounding box X1 */
             boundingBoxX1: number;
@@ -6974,7 +8504,10 @@ export interface components {
              * @example 2024-01-01T00:00:00.000Z
              */
             deletedAt: string | null;
-            /** @description Asset face ID */
+            /**
+             * Format: uuid
+             * @description Asset face ID
+             */
             id: string;
             /** @description Image height */
             imageHeight: number;
@@ -6988,13 +8521,19 @@ export interface components {
             sourceType: string;
         };
         SyncAssetMetadataDeleteV1: {
-            /** @description Asset ID */
+            /**
+             * Format: uuid
+             * @description Asset ID
+             */
             assetId: string;
             /** @description Key */
             key: string;
         };
         SyncAssetMetadataV1: {
-            /** @description Asset ID */
+            /**
+             * Format: uuid
+             * @description Asset ID
+             */
             assetId: string;
             /** @description Key */
             key: string;
@@ -7016,14 +8555,20 @@ export interface components {
             id: string;
         };
         SyncAssetOcrV1: {
-            /** @description Asset ID */
+            /**
+             * Format: uuid
+             * @description Asset ID
+             */
             assetId: string;
             /**
              * Format: double
              * @description Confidence score of the bounding box
              */
             boxScore: number;
-            /** @description OCR entry ID */
+            /**
+             * Format: uuid
+             * @description OCR entry ID
+             */
             id: string;
             /** @description Whether the OCR entry is visible */
             isVisible: boolean;
@@ -7106,7 +8651,10 @@ export interface components {
             fileModifiedAt: string | null;
             /** @description Asset height */
             height: number | null;
-            /** @description Asset ID */
+            /**
+             * Format: uuid
+             * @description Asset ID
+             */
             id: string;
             /** @description Is edited */
             isEdited: boolean;
@@ -7124,7 +8672,10 @@ export interface components {
             localDateTime: string | null;
             /** @description Original file name */
             originalFileName: string;
-            /** @description Owner ID */
+            /**
+             * Format: uuid
+             * @description Owner ID
+             */
             ownerId: string;
             /** @description Stack ID */
             stackId: string | null;
@@ -7166,7 +8717,10 @@ export interface components {
             fileModifiedAt: string | null;
             /** @description Asset height */
             height: number | null;
-            /** @description Asset ID */
+            /**
+             * Format: uuid
+             * @description Asset ID
+             */
             id: string;
             /** @description Is edited */
             isEdited: boolean;
@@ -7184,7 +8738,10 @@ export interface components {
             localDateTime: string | null;
             /** @description Original file name */
             originalFileName: string;
-            /** @description Owner ID */
+            /**
+             * Format: uuid
+             * @description Owner ID
+             */
             ownerId: string;
             /** @description Stack ID */
             stackId: string | null;
@@ -7207,7 +8764,10 @@ export interface components {
             email: string;
             /** @description User has profile image */
             hasProfileImage: boolean;
-            /** @description User ID */
+            /**
+             * Format: uuid
+             * @description User ID
+             */
             id: string;
             /** @description User is admin */
             isAdmin: boolean;
@@ -7237,19 +8797,34 @@ export interface components {
          */
         SyncEntityType: "AuthUserV1" | "UserV1" | "UserDeleteV1" | "AssetV1" | "AssetV2" | "AssetDeleteV1" | "AssetExifV1" | "AssetEditV1" | "AssetEditDeleteV1" | "AssetMetadataV1" | "AssetMetadataDeleteV1" | "AssetOcrV1" | "AssetOcrDeleteV1" | "PartnerV1" | "PartnerDeleteV1" | "PartnerAssetV1" | "PartnerAssetV2" | "PartnerAssetBackfillV1" | "PartnerAssetBackfillV2" | "PartnerAssetDeleteV1" | "PartnerAssetExifV1" | "PartnerAssetExifBackfillV1" | "PartnerStackBackfillV1" | "PartnerStackDeleteV1" | "PartnerStackV1" | "AlbumV1" | "AlbumV2" | "AlbumDeleteV1" | "AlbumUserV1" | "AlbumUserBackfillV1" | "AlbumUserDeleteV1" | "AlbumAssetCreateV1" | "AlbumAssetCreateV2" | "AlbumAssetUpdateV1" | "AlbumAssetUpdateV2" | "AlbumAssetBackfillV1" | "AlbumAssetBackfillV2" | "AlbumAssetExifCreateV1" | "AlbumAssetExifUpdateV1" | "AlbumAssetExifBackfillV1" | "AlbumToAssetV1" | "AlbumToAssetDeleteV1" | "AlbumToAssetBackfillV1" | "MemoryV1" | "MemoryDeleteV1" | "MemoryToAssetV1" | "MemoryToAssetDeleteV1" | "StackV1" | "StackDeleteV1" | "PersonV1" | "PersonDeleteV1" | "AssetFaceV1" | "AssetFaceV2" | "AssetFaceDeleteV1" | "UserMetadataV1" | "UserMetadataDeleteV1" | "SyncAckV1" | "SyncResetV1" | "SyncCompleteV1";
         SyncMemoryAssetDeleteV1: {
-            /** @description Asset ID */
+            /**
+             * Format: uuid
+             * @description Asset ID
+             */
             assetId: string;
-            /** @description Memory ID */
+            /**
+             * Format: uuid
+             * @description Memory ID
+             */
             memoryId: string;
         };
         SyncMemoryAssetV1: {
-            /** @description Asset ID */
+            /**
+             * Format: uuid
+             * @description Asset ID
+             */
             assetId: string;
-            /** @description Memory ID */
+            /**
+             * Format: uuid
+             * @description Memory ID
+             */
             memoryId: string;
         };
         SyncMemoryDeleteV1: {
-            /** @description Memory ID */
+            /**
+             * Format: uuid
+             * @description Memory ID
+             */
             memoryId: string;
         };
         SyncMemoryV1: {
@@ -7275,7 +8850,10 @@ export interface components {
              * @example 2024-01-01T00:00:00.000Z
              */
             hideAt: string | null;
-            /** @description Memory ID */
+            /**
+             * Format: uuid
+             * @description Memory ID
+             */
             id: string;
             /** @description Is saved */
             isSaved: boolean;
@@ -7285,7 +8863,10 @@ export interface components {
              * @example 2024-01-01T00:00:00.000Z
              */
             memoryAt: string;
-            /** @description Owner ID */
+            /**
+             * Format: uuid
+             * @description Owner ID
+             */
             ownerId: string;
             /**
              * Format: date-time
@@ -7308,21 +8889,36 @@ export interface components {
             updatedAt: string;
         };
         SyncPartnerDeleteV1: {
-            /** @description Shared by ID */
+            /**
+             * Format: uuid
+             * @description Shared by ID
+             */
             sharedById: string;
-            /** @description Shared with ID */
+            /**
+             * Format: uuid
+             * @description Shared with ID
+             */
             sharedWithId: string;
         };
         SyncPartnerV1: {
             /** @description In timeline */
             inTimeline: boolean;
-            /** @description Shared by ID */
+            /**
+             * Format: uuid
+             * @description Shared by ID
+             */
             sharedById: string;
-            /** @description Shared with ID */
+            /**
+             * Format: uuid
+             * @description Shared with ID
+             */
             sharedWithId: string;
         };
         SyncPersonDeleteV1: {
-            /** @description Person ID */
+            /**
+             * Format: uuid
+             * @description Person ID
+             */
             personId: string;
         };
         SyncPersonV1: {
@@ -7342,7 +8938,10 @@ export interface components {
             createdAt: string;
             /** @description Face asset ID */
             faceAssetId: string | null;
-            /** @description Person ID */
+            /**
+             * Format: uuid
+             * @description Person ID
+             */
             id: string;
             /** @description Is favorite */
             isFavorite: boolean;
@@ -7350,7 +8949,10 @@ export interface components {
             isHidden: boolean;
             /** @description Person name */
             name: string;
-            /** @description Owner ID */
+            /**
+             * Format: uuid
+             * @description Owner ID
+             */
             ownerId: string;
             /**
              * Format: date-time
@@ -7366,7 +8968,10 @@ export interface components {
         SyncRequestType: "AlbumsV1" | "AlbumsV2" | "AlbumUsersV1" | "AlbumToAssetsV1" | "AlbumAssetsV1" | "AlbumAssetsV2" | "AlbumAssetExifsV1" | "AssetsV1" | "AssetsV2" | "AssetExifsV1" | "AssetEditsV1" | "AssetMetadataV1" | "AssetOcrV1" | "AuthUsersV1" | "MemoriesV1" | "MemoryToAssetsV1" | "PartnersV1" | "PartnerAssetsV1" | "PartnerAssetsV2" | "PartnerAssetExifsV1" | "PartnerStacksV1" | "StacksV1" | "UsersV1" | "PeopleV1" | "AssetFacesV1" | "AssetFacesV2" | "UserMetadataV1";
         SyncResetV1: Record<string, never>;
         SyncStackDeleteV1: {
-            /** @description Stack ID */
+            /**
+             * Format: uuid
+             * @description Stack ID
+             */
             stackId: string;
         };
         SyncStackV1: {
@@ -7376,11 +8981,20 @@ export interface components {
              * @example 2024-01-01T00:00:00.000Z
              */
             createdAt: string;
-            /** @description Stack ID */
+            /**
+             * Format: uuid
+             * @description Stack ID
+             */
             id: string;
-            /** @description Owner ID */
+            /**
+             * Format: uuid
+             * @description Owner ID
+             */
             ownerId: string;
-            /** @description Primary asset ID */
+            /**
+             * Format: uuid
+             * @description Primary asset ID
+             */
             primaryAssetId: string;
             /**
              * Format: date-time
@@ -7396,17 +9010,26 @@ export interface components {
             types: components["schemas"]["SyncRequestType"][];
         };
         SyncUserDeleteV1: {
-            /** @description User ID */
+            /**
+             * Format: uuid
+             * @description User ID
+             */
             userId: string;
         };
         SyncUserMetadataDeleteV1: {
             key: components["schemas"]["UserMetadataKey"];
-            /** @description User ID */
+            /**
+             * Format: uuid
+             * @description User ID
+             */
             userId: string;
         };
         SyncUserMetadataV1: {
             key: components["schemas"]["UserMetadataKey"];
-            /** @description User ID */
+            /**
+             * Format: uuid
+             * @description User ID
+             */
             userId: string;
             /** @description User metadata value */
             value: {
@@ -7425,7 +9048,10 @@ export interface components {
             email: string;
             /** @description User has profile image */
             hasProfileImage: boolean;
-            /** @description User ID */
+            /**
+             * Format: uuid
+             * @description User ID
+             */
             id: string;
             /** @description User name */
             name: string;
@@ -7435,315 +9061,6 @@ export interface components {
              * @example 2024-01-01T00:00:00.000Z
              */
             profileChangedAt: string;
-        };
-        SystemConfigBackupsDto: {
-            database: components["schemas"]["DatabaseBackupConfig"];
-        };
-        /** @description System configuration */
-        SystemConfigDto: {
-            backup: components["schemas"]["SystemConfigBackupsDto"];
-            ffmpeg: components["schemas"]["SystemConfigFFmpegDto"];
-            image: components["schemas"]["SystemConfigImageDto"];
-            integrityChecks: components["schemas"]["SystemConfigIntegrityChecks"];
-            job: components["schemas"]["SystemConfigJobDto"];
-            library: components["schemas"]["SystemConfigLibraryDto"];
-            logging: components["schemas"]["SystemConfigLoggingDto"];
-            machineLearning: components["schemas"]["SystemConfigMachineLearningDto"];
-            map: components["schemas"]["SystemConfigMapDto"];
-            metadata: components["schemas"]["SystemConfigMetadataDto"];
-            newVersionCheck: components["schemas"]["SystemConfigNewVersionCheckDto"];
-            nightlyTasks: components["schemas"]["SystemConfigNightlyTasksDto"];
-            notifications: components["schemas"]["SystemConfigNotificationsDto"];
-            oauth: components["schemas"]["SystemConfigOAuthDto"];
-            passwordLogin: components["schemas"]["SystemConfigPasswordLoginDto"];
-            reverseGeocoding: components["schemas"]["SystemConfigReverseGeocodingDto"];
-            server: components["schemas"]["SystemConfigServerDto"];
-            storageTemplate: components["schemas"]["SystemConfigStorageTemplateDto"];
-            templates: components["schemas"]["SystemConfigTemplatesDto"];
-            theme: components["schemas"]["SystemConfigThemeDto"];
-            trash: components["schemas"]["SystemConfigTrashDto"];
-            user: components["schemas"]["SystemConfigUserDto"];
-        };
-        SystemConfigFFmpegDto: {
-            accel: components["schemas"]["TranscodeHWAccel"];
-            /** @description Accelerated decode */
-            accelDecode: boolean;
-            /** @description Accepted audio codecs */
-            acceptedAudioCodecs: components["schemas"]["AudioCodec"][];
-            /** @description Accepted containers */
-            acceptedContainers: components["schemas"]["VideoContainer"][];
-            /** @description Accepted video codecs */
-            acceptedVideoCodecs: components["schemas"]["VideoCodec"][];
-            /** @description B-frames */
-            bframes: number;
-            cqMode: components["schemas"]["CQMode"];
-            /** @description CRF */
-            crf: number;
-            /** @description GOP size */
-            gopSize: number;
-            /** @description Max bitrate */
-            maxBitrate: string;
-            /** @description Preferred hardware device */
-            preferredHwDevice: string;
-            /** @description Preset */
-            preset: string;
-            realtime: components["schemas"]["SystemConfigFFmpegRealtimeDto"];
-            /** @description References */
-            refs: number;
-            targetAudioCodec: components["schemas"]["AudioCodec"];
-            /** @description Target resolution */
-            targetResolution: string;
-            targetVideoCodec: components["schemas"]["VideoCodec"];
-            /** @description Temporal AQ */
-            temporalAQ: boolean;
-            /** @description Threads */
-            threads: number;
-            tonemap: components["schemas"]["ToneMapping"];
-            transcode: components["schemas"]["TranscodePolicy"];
-            /** @description Two pass */
-            twoPass: boolean;
-        };
-        SystemConfigFFmpegRealtimeDto: {
-            /** @description Enable real-time HLS transcoding (alpha) */
-            enabled: boolean;
-        };
-        SystemConfigFacesDto: {
-            /** @description Import */
-            import: boolean;
-        };
-        SystemConfigGeneratedFullsizeImageDto: {
-            /** @description Enabled */
-            enabled: boolean;
-            format: components["schemas"]["ImageFormat"];
-            /** @description Progressive */
-            progressive?: boolean;
-            /** @description Quality */
-            quality: number;
-        };
-        SystemConfigGeneratedImageDto: {
-            format: components["schemas"]["ImageFormat"];
-            /** @description Progressive */
-            progressive?: boolean;
-            /** @description Quality */
-            quality: number;
-            /** @description Size */
-            size: number;
-        };
-        SystemConfigImageDto: {
-            colorspace: components["schemas"]["Colorspace"];
-            /** @description Extract embedded */
-            extractEmbedded: boolean;
-            fullsize: components["schemas"]["SystemConfigGeneratedFullsizeImageDto"];
-            preview: components["schemas"]["SystemConfigGeneratedImageDto"];
-            thumbnail: components["schemas"]["SystemConfigGeneratedImageDto"];
-        };
-        /** @description Integrity checks config */
-        SystemConfigIntegrityChecks: {
-            checksumFiles: components["schemas"]["SystemConfigIntegrityChecksumJob"];
-            missingFiles: components["schemas"]["SystemConfigIntegrityJob"];
-            untrackedFiles: components["schemas"]["SystemConfigIntegrityJob"];
-        };
-        /** @description Integrity checksum job config */
-        SystemConfigIntegrityChecksumJob: {
-            /** @description Cron expression for when the integrity check should run */
-            cronExpression: string;
-            /** @description Enabled */
-            enabled: boolean;
-            /** @description Percentage limit of the integrity checksum job */
-            percentageLimit: number;
-            /** @description How long the integrity checksum job may run for */
-            timeLimit: number;
-        };
-        /** @description Integrity job config */
-        SystemConfigIntegrityJob: {
-            /** @description Cron expression for when the integrity check should run */
-            cronExpression: string;
-            /** @description Enabled */
-            enabled: boolean;
-        };
-        SystemConfigJobDto: {
-            backgroundTask: components["schemas"]["JobSettingsDto"];
-            editor: components["schemas"]["JobSettingsDto"];
-            faceDetection: components["schemas"]["JobSettingsDto"];
-            integrityCheck: components["schemas"]["JobSettingsDto"];
-            library: components["schemas"]["JobSettingsDto"];
-            metadataExtraction: components["schemas"]["JobSettingsDto"];
-            migration: components["schemas"]["JobSettingsDto"];
-            notifications: components["schemas"]["JobSettingsDto"];
-            ocr: components["schemas"]["JobSettingsDto"];
-            search: components["schemas"]["JobSettingsDto"];
-            sidecar: components["schemas"]["JobSettingsDto"];
-            smartSearch: components["schemas"]["JobSettingsDto"];
-            thumbnailGeneration: components["schemas"]["JobSettingsDto"];
-            videoConversion: components["schemas"]["JobSettingsDto"];
-            workflow: components["schemas"]["JobSettingsDto"];
-        };
-        SystemConfigLibraryDto: {
-            scan: components["schemas"]["SystemConfigLibraryScanDto"];
-            watch: components["schemas"]["SystemConfigLibraryWatchDto"];
-        };
-        SystemConfigLibraryScanDto: {
-            /** @description Cron expression */
-            cronExpression: string;
-            /** @description Enabled */
-            enabled: boolean;
-        };
-        SystemConfigLibraryWatchDto: {
-            /** @description Enabled */
-            enabled: boolean;
-        };
-        SystemConfigLoggingDto: {
-            /** @description Enabled */
-            enabled: boolean;
-            level: components["schemas"]["LogLevel"];
-        };
-        SystemConfigMachineLearningDto: {
-            availabilityChecks: components["schemas"]["MachineLearningAvailabilityChecksDto"];
-            clip: components["schemas"]["CLIPConfig"];
-            duplicateDetection: components["schemas"]["DuplicateDetectionConfig"];
-            /** @description Enabled */
-            enabled: boolean;
-            facialRecognition: components["schemas"]["FacialRecognitionConfig"];
-            ocr: components["schemas"]["OcrConfig"];
-            /** @description ML service URLs */
-            urls: string[];
-        };
-        SystemConfigMapDto: {
-            /**
-             * Format: uri
-             * @description Dark map style URL
-             */
-            darkStyle: string;
-            /** @description Enabled */
-            enabled: boolean;
-            /**
-             * Format: uri
-             * @description Light map style URL
-             */
-            lightStyle: string;
-        };
-        SystemConfigMetadataDto: {
-            faces: components["schemas"]["SystemConfigFacesDto"];
-        };
-        SystemConfigNewVersionCheckDto: {
-            channel: components["schemas"]["ReleaseChannel"];
-            /** @description Enabled */
-            enabled: boolean;
-        };
-        SystemConfigNightlyTasksDto: {
-            /** @description Cluster new faces */
-            clusterNewFaces: boolean;
-            /** @description Database cleanup */
-            databaseCleanup: boolean;
-            /** @description Generate memories */
-            generateMemories: boolean;
-            /** @description Missing thumbnails */
-            missingThumbnails: boolean;
-            /** @description Start time */
-            startTime: string;
-            /** @description Sync quota usage */
-            syncQuotaUsage: boolean;
-        };
-        SystemConfigNotificationsDto: {
-            smtp: components["schemas"]["SystemConfigSmtpDto"];
-        };
-        SystemConfigOAuthDto: {
-            /** @description Allow insecure requests */
-            allowInsecureRequests: boolean;
-            /** @description Auto launch */
-            autoLaunch: boolean;
-            /** @description Auto register */
-            autoRegister: boolean;
-            /** @description Button text */
-            buttonText: string;
-            /** @description Client ID */
-            clientId: string;
-            /** @description Client secret */
-            clientSecret: string;
-            /** @description Default storage quota */
-            defaultStorageQuota: number | null;
-            /** @description Enabled */
-            enabled: boolean;
-            /** @description End session endpoint */
-            endSessionEndpoint: string;
-            /** @description Issuer URL */
-            issuerUrl: string;
-            /** @description Mobile override enabled */
-            mobileOverrideEnabled: boolean;
-            /** @description Mobile redirect URI (set to empty string to disable) */
-            mobileRedirectUri: string;
-            /** @description Profile signing algorithm */
-            profileSigningAlgorithm: string;
-            /** @description OAuth prompt parameter (e.g. select_account, login, consent) */
-            prompt: string;
-            /** @description Role claim */
-            roleClaim: string;
-            /** @description Scope */
-            scope: string;
-            /** @description Signing algorithm */
-            signingAlgorithm: string;
-            /** @description Storage label claim */
-            storageLabelClaim: string;
-            /** @description Storage quota claim */
-            storageQuotaClaim: string;
-            /** @description Timeout */
-            timeout: number;
-            tokenEndpointAuthMethod: components["schemas"]["OAuthTokenEndpointAuthMethod"];
-        };
-        SystemConfigPasswordLoginDto: {
-            /** @description Enabled */
-            enabled: boolean;
-        };
-        SystemConfigReverseGeocodingDto: {
-            /** @description Enabled */
-            enabled: boolean;
-        };
-        SystemConfigServerDto: {
-            /** @description External domain */
-            externalDomain: string;
-            /** @description Login page message */
-            loginPageMessage: string;
-            /** @description Public users */
-            publicUsers: boolean;
-        };
-        SystemConfigSmtpDto: {
-            /** @description Whether SMTP email notifications are enabled */
-            enabled: boolean;
-            /** @description Email address to send from */
-            from: string;
-            /** @description Email address for replies */
-            replyTo: string;
-            transport: components["schemas"]["SystemConfigSmtpTransportDto"];
-        };
-        SystemConfigSmtpTransportDto: {
-            /** @description SMTP server hostname */
-            host: string;
-            /** @description Whether to ignore SSL certificate errors */
-            ignoreCert: boolean;
-            /** @description SMTP password */
-            password: string;
-            /** @description SMTP server port */
-            port: number;
-            /** @description Whether to use secure connection (TLS/SSL) */
-            secure: boolean;
-            /** @description SMTP username */
-            username: string;
-        };
-        SystemConfigStorageTemplateDto: {
-            /** @description Enabled */
-            enabled: boolean;
-            /** @description Hash verification enabled */
-            hashVerificationEnabled: boolean;
-            /** @description Template */
-            template: string;
-        };
-        SystemConfigTemplateEmailsDto: {
-            /** @description Album invite template */
-            albumInviteTemplate: string;
-            /** @description Album update template */
-            albumUpdateTemplate: string;
-            /** @description Welcome template */
-            welcomeTemplate: string;
         };
         SystemConfigTemplateStorageOptionDto: {
             /** @description Available day format options for storage template */
@@ -7762,23 +9079,6 @@ export interface components {
             weekOptions: string[];
             /** @description Available year format options for storage template */
             yearOptions: string[];
-        };
-        SystemConfigTemplatesDto: {
-            email: components["schemas"]["SystemConfigTemplateEmailsDto"];
-        };
-        SystemConfigThemeDto: {
-            /** @description Custom CSS for theming */
-            customCss: string;
-        };
-        SystemConfigTrashDto: {
-            /** @description Days */
-            days: number;
-            /** @description Enabled */
-            enabled: boolean;
-        };
-        SystemConfigUserDto: {
-            /** @description Delete delay */
-            deleteDelay: number;
         };
         TagBulkAssetsDto: {
             /** @description Asset IDs */
@@ -7809,7 +9109,10 @@ export interface components {
              * @description Creation date
              */
             createdAt: string;
-            /** @description Tag ID */
+            /**
+             * Format: uuid
+             * @description Tag ID
+             */
             id: string;
             /** @description Tag name */
             name: string;
@@ -7826,6 +9129,8 @@ export interface components {
         TagUpdateDto: {
             /** @description Tag color (hex) */
             color?: string | null;
+            /** @description Tag name */
+            name?: string;
         };
         TagUpsertDto: {
             /** @description Tag names to upsert */
@@ -7937,7 +9242,7 @@ export interface components {
              */
             albumThumbnailAssetId?: string;
             /** @description Album description */
-            description?: string;
+            description?: string | null;
             /** @description Enable activity feed */
             isActivityEnabled?: boolean;
             order?: components["schemas"]["AssetOrder"];
@@ -7984,7 +9289,10 @@ export interface components {
             usagePhotos: number;
             /** @description Storage usage for videos in bytes */
             usageVideos: number;
-            /** @description User ID */
+            /**
+             * Format: uuid
+             * @description User ID
+             */
             userId: string;
             /** @description User name */
             userName: string;
@@ -8024,6 +9332,11 @@ export interface components {
         };
         UserAdminResponseDto: {
             avatarColor: components["schemas"]["UserAvatarColor"];
+            /**
+             * Format: uuid
+             * @description Cluster group the user is a member of
+             */
+            clusterGroupId: string;
             /**
              * Format: date-time
              * @description Creation date
@@ -8106,6 +9419,122 @@ export interface components {
          * @enum {string}
          */
         UserAvatarColor: "primary" | "pink" | "red" | "yellow" | "blue" | "green" | "purple" | "orange" | "gray" | "amber";
+        UserConfigClipDto: {
+            /** @description Whether the task is enabled */
+            enabled: boolean;
+        };
+        /** @description Configuration properties that are visible to a logged user */
+        UserConfigDto: {
+            ffmpeg: components["schemas"]["UserConfigFFmpegDto"];
+            image: components["schemas"]["UserConfigImageDto"];
+            machineLearning: components["schemas"]["UserConfigMachineLearningDto"];
+            map: components["schemas"]["UserConfigMapDto"];
+            oauth: components["schemas"]["UserConfigOAuthDto"];
+            passwordLogin: components["schemas"]["UserConfigPasswordLoginDto"];
+            reverseGeocoding: components["schemas"]["UserConfigReverseGeocodingDto"];
+            server: components["schemas"]["UserConfigServerDto"];
+            theme: components["schemas"]["UserConfigThemeDto"];
+            trash: components["schemas"]["UserConfigTrashDto"];
+            user: components["schemas"]["UserConfigUserDto"];
+        };
+        UserConfigDuplicateDetectionDto: {
+            /** @description Whether the task is enabled */
+            enabled: boolean;
+        };
+        UserConfigFFmpegDto: {
+            realtime: components["schemas"]["UserConfigFFmpegRealtimeDto"];
+        };
+        UserConfigFFmpegRealtimeDto: {
+            /** @description Enable real-time HLS transcoding (alpha) */
+            enabled: boolean;
+            /** @description Resolutions to use for real-time HLS transcoding */
+            resolutions: components["schemas"]["HlsVideoResolution"][];
+            /** @description Video codecs to use for real-time HLS transcoding */
+            videoCodecs: components["schemas"]["VideoCodec"][];
+        };
+        UserConfigFacialRecognitionDto: {
+            /** @description Whether the task is enabled */
+            enabled: boolean;
+            /** @description Minimum number of faces required for recognition */
+            minFaces: number;
+        };
+        UserConfigGeneratedFullsizeImageDto: {
+            /** @description Enabled */
+            enabled: boolean;
+        };
+        UserConfigGeneratedImageDto: {
+            /** @description Size */
+            size: number;
+        };
+        UserConfigImageDto: {
+            fullsize: components["schemas"]["UserConfigGeneratedFullsizeImageDto"];
+            preview: components["schemas"]["UserConfigGeneratedImageDto"];
+            thumbnail: components["schemas"]["UserConfigGeneratedImageDto"];
+        };
+        UserConfigMachineLearningDto: {
+            clip: components["schemas"]["UserConfigClipDto"];
+            duplicateDetection: components["schemas"]["UserConfigDuplicateDetectionDto"];
+            /** @description Enabled */
+            enabled: boolean;
+            facialRecognition: components["schemas"]["UserConfigFacialRecognitionDto"];
+            ocr: components["schemas"]["UserConfigOcrDto"];
+        };
+        UserConfigMapDto: {
+            /**
+             * Format: uri
+             * @description Dark map style URL
+             */
+            darkStyle: string;
+            /** @description Enabled */
+            enabled: boolean;
+            /**
+             * Format: uri
+             * @description Light map style URL
+             */
+            lightStyle: string;
+        };
+        UserConfigOAuthDto: {
+            /** @description Auto launch */
+            autoLaunch: boolean;
+            /** @description Button text */
+            buttonText: string;
+            /** @description Enabled */
+            enabled: boolean;
+        };
+        UserConfigOcrDto: {
+            /** @description Whether the task is enabled */
+            enabled: boolean;
+        };
+        UserConfigPasswordLoginDto: {
+            /** @description Enabled */
+            enabled: boolean;
+        };
+        UserConfigReverseGeocodingDto: {
+            /** @description Enabled */
+            enabled: boolean;
+        };
+        UserConfigServerDto: {
+            /** @description External domain */
+            externalDomain: string;
+            /** @description Login page message */
+            loginPageMessage: string;
+            /** @description Public users */
+            publicUsers: boolean;
+        };
+        UserConfigThemeDto: {
+            /** @description Custom CSS for theming */
+            customCss: string;
+        };
+        UserConfigTrashDto: {
+            /** @description Days */
+            days: number;
+            /** @description Enabled */
+            enabled: boolean;
+        };
+        UserConfigUserDto: {
+            /** @description Delete delay */
+            deleteDelay: number;
+        };
         UserLicense: {
             /**
              * Format: date-time
@@ -8133,6 +9562,7 @@ export interface components {
             people: components["schemas"]["PeopleResponse"];
             purchase: components["schemas"]["PurchaseResponse"];
             ratings: components["schemas"]["RatingsResponse"];
+            recentlyAdded: components["schemas"]["RecentlyAddedResponse"];
             sharedLinks: components["schemas"]["SharedLinksResponse"];
             tags: components["schemas"]["TagsResponse"];
         };
@@ -8147,6 +9577,7 @@ export interface components {
             people?: components["schemas"]["PeopleUpdate"];
             purchase?: components["schemas"]["PurchaseUpdate"];
             ratings?: components["schemas"]["RatingsUpdate"];
+            recentlyAdded?: components["schemas"]["RecentlyAddedUpdate"];
             sharedLinks?: components["schemas"]["SharedLinksUpdate"];
             tags?: components["schemas"]["TagsUpdate"];
         };
@@ -8235,11 +9666,39 @@ export interface components {
             description?: string | null;
             /** @description Workflow enabled */
             enabled?: boolean;
+            /** @description Workflow logs run results */
+            logging?: boolean;
             /** @description Workflow name */
             name?: string | null;
             steps?: components["schemas"]["WorkflowStepDto"][];
             /** @description Workflow trigger type */
             trigger: components["schemas"]["WorkflowTrigger"];
+        };
+        WorkflowLogEntryDto: {
+            /**
+             * Format: date-time
+             * @description Workflow run date/time
+             * @example 2024-01-01T00:00:00.000Z
+             */
+            at: string;
+            /**
+             * Format: uuid
+             * @description Workflow log entry ID
+             */
+            id: string;
+            /** @description Last step ran, if the workflow ended early */
+            lastStep?: {
+                /** @description Index of the step in the workflow */
+                index: number;
+                /** @description Method of the step */
+                method: string;
+            };
+            result: components["schemas"]["WorkflowResult"];
+            /**
+             * Format: uuid
+             * @description Workflow trigger data ID
+             */
+            triggerDataId?: string;
         };
         WorkflowResponseDto: {
             /** @description Creation date */
@@ -8248,8 +9707,13 @@ export interface components {
             description: string | null;
             /** @description Workflow enabled */
             enabled: boolean;
-            /** @description Workflow ID */
+            /**
+             * Format: uuid
+             * @description Workflow ID
+             */
             id: string;
+            /** @description Workflow logs run results */
+            logging: boolean;
             /** @description Workflow name */
             name: string | null;
             /** @description Workflow steps */
@@ -8259,6 +9723,11 @@ export interface components {
             /** @description Update date */
             updatedAt: string;
         };
+        /**
+         * @description Workflow run result
+         * @enum {string}
+         */
+        WorkflowResult: "completed" | "halted" | "error";
         WorkflowShareResponseDto: {
             /** @description Workflow description */
             description: string | null;
@@ -8293,7 +9762,7 @@ export interface components {
          * @description Plugin trigger type
          * @enum {string}
          */
-        WorkflowTrigger: "AssetCreate" | "AssetMetadataExtraction";
+        WorkflowTrigger: "AssetCreate" | "AssetMetadataExtraction" | "AssetTagged";
         WorkflowTriggerResponseDto: {
             /** @description Trigger type */
             trigger: components["schemas"]["WorkflowTrigger"];
@@ -8310,6 +9779,8 @@ export interface components {
             description?: string | null;
             /** @description Workflow enabled */
             enabled?: boolean;
+            /** @description Workflow logs run results */
+            logging?: boolean;
             /** @description Workflow name */
             name?: string | null;
             steps?: components["schemas"]["WorkflowStepDto"][];
@@ -8433,6 +9904,67 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    getAdminConfig: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminConfigDto"];
+                };
+            };
+        };
+    };
+    updateAdminConfig: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminConfigDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminConfigDto"];
+                };
+            };
+        };
+    };
+    getAdminConfigDefaults: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminConfigDto"];
+                };
             };
         };
     };
@@ -8780,7 +10312,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["SystemConfigSmtpDto"];
+                "application/json": components["schemas"]["AdminConfigSmtpDto"];
             };
         };
         responses: {
@@ -9296,7 +10828,9 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
+                /** @description Album ID */
                 id: string;
+                /** @description Album user ID, or "me" to reference the current user. */
                 userId: string;
             };
             cookie?: never;
@@ -9320,7 +10854,9 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
+                /** @description Album ID */
                 id: string;
+                /** @description Album user ID, or "me" to reference the current user. */
                 userId: string;
             };
             cookie?: never;
@@ -9483,6 +11019,118 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    rotateApiKey: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiKeyCreateResponseDto"];
+                };
+            };
+        };
+    };
+    searchAssetFiles: {
+        parameters: {
+            query: {
+                /** @description Asset ID to filter files by */
+                assetId: string;
+                /** @description The file was generated from an edit */
+                isEdited?: boolean;
+                /** @description The file is a progressively encoded JPEG */
+                isProgressive?: boolean;
+                /** @description The file is transparent */
+                isTransparent?: boolean;
+                /** @description Filter by type of file */
+                type?: components["schemas"]["AssetFileType"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetFileResponseDto"][];
+                };
+            };
+        };
+    };
+    getAssetFile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetFileResponseDto"];
+                };
+            };
+        };
+    };
+    deleteAssetFile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    downloadAssetFile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/octet-stream": string;
+                };
             };
         };
     };
@@ -10059,7 +11707,9 @@ export interface operations {
                 key?: string;
                 slug?: string;
             };
-            header?: never;
+            header?: {
+                "x-immich-hls-pos"?: number;
+            };
             path: {
                 id: string;
                 sessionId: string;
@@ -10331,6 +11981,206 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ValidateAccessTokenResponseDto"];
+                };
+            };
+        };
+    };
+    getClusterGroupRequests: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClusterGroupRequestResponseDto"][];
+                };
+            };
+        };
+    };
+    deleteClusterGroupRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    acceptClusterGroupRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    leaveClusterGroup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    clusterGroupRegeneratePeople: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getClusterGroupRequestsForGroup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClusterGroupRequestResponseDto"][];
+                };
+            };
+        };
+    };
+    createClusterGroupRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ClusterGroupRequestCreateDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClusterGroupRequestResponseDto"];
+                };
+            };
+        };
+    };
+    getClusterGroupUsers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserResponseDto"][];
+                };
+            };
+        };
+    };
+    getUserConfig: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserConfigDto"];
+                };
+            };
+        };
+    };
+    getUserConfigDefaults: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserConfigDto"];
                 };
             };
         };
@@ -10858,11 +12708,17 @@ export interface operations {
             query?: {
                 /** @description Filter by date */
                 for?: string;
+                /** @description Memory ID */
+                id?: string;
                 /** @description Filter by saved status */
                 isSaved?: boolean;
                 /** @description Include trashed memories */
                 isTrashed?: boolean;
+                /** @description Filter by memories that have not been shown yet */
+                isUpcoming?: boolean;
                 order?: components["schemas"]["MemorySearchOrder"];
+                /** @description Page number */
+                page?: number;
                 /** @description Number of memories to return */
                 size?: number;
                 type?: components["schemas"]["MemoryType"];
@@ -10911,11 +12767,17 @@ export interface operations {
             query?: {
                 /** @description Filter by date */
                 for?: string;
+                /** @description Memory ID */
+                id?: string;
                 /** @description Filter by saved status */
                 isSaved?: boolean;
                 /** @description Include trashed memories */
                 isTrashed?: boolean;
+                /** @description Filter by memories that have not been shown yet */
+                isUpcoming?: boolean;
                 order?: components["schemas"]["MemorySearchOrder"];
+                /** @description Page number */
+                page?: number;
                 /** @description Number of memories to return */
                 size?: number;
                 type?: components["schemas"]["MemoryType"];
@@ -11776,6 +13638,44 @@ export interface operations {
             };
         };
     };
+    getPublicConfig: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicConfigDto"];
+                };
+            };
+        };
+    };
+    getPublicConfigDefaults: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicConfigDto"];
+                };
+            };
+        };
+    };
     getQueues: {
         parameters: {
             query?: never;
@@ -11929,63 +13829,143 @@ export interface operations {
     searchLargeAssets: {
         parameters: {
             query?: {
-                /** @description Filter by album IDs */
+                /**
+                 * @deprecated
+                 * @description Filter by album IDs
+                 */
                 albumIds?: string[];
-                /** @description Filter by city name */
+                /**
+                 * @deprecated
+                 * @description Filter by city name
+                 */
                 city?: string | null;
-                /** @description Filter by country name */
+                /**
+                 * @deprecated
+                 * @description Filter by country name
+                 */
                 country?: string | null;
-                /** @description Filter by creation date (after) */
+                /**
+                 * @deprecated
+                 * @description Filter by creation date (after)
+                 */
                 createdAfter?: string;
-                /** @description Filter by creation date (before) */
+                /**
+                 * @deprecated
+                 * @description Filter by creation date (before)
+                 */
                 createdBefore?: string;
-                /** @description Filter by encoded status */
+                /**
+                 * @deprecated
+                 * @description Filter by encoded status
+                 */
                 isEncoded?: boolean;
-                /** @description Filter by favorite status */
+                /**
+                 * @deprecated
+                 * @description Filter by favorite status
+                 */
                 isFavorite?: boolean;
-                /** @description Filter by motion photo status */
+                /**
+                 * @deprecated
+                 * @description Filter by motion photo status
+                 */
                 isMotion?: boolean;
-                /** @description Filter assets not in any album */
+                /**
+                 * @deprecated
+                 * @description Filter assets not in any album
+                 */
                 isNotInAlbum?: boolean;
-                /** @description Filter by offline status */
+                /**
+                 * @deprecated
+                 * @description Filter by offline status
+                 */
                 isOffline?: boolean;
-                /** @description Filter by lens model */
+                /**
+                 * @deprecated
+                 * @description Filter by lens model
+                 */
                 lensModel?: string | null;
-                /** @description Library ID to filter by */
+                /**
+                 * @deprecated
+                 * @description Library ID to filter by
+                 */
                 libraryId?: string | null;
-                /** @description Filter by camera make */
+                /**
+                 * @deprecated
+                 * @description Filter by camera make
+                 */
                 make?: string | null;
                 /** @description Minimum file size in bytes */
                 minFileSize?: number;
-                /** @description Filter by camera model */
+                /**
+                 * @deprecated
+                 * @description Filter by camera model
+                 */
                 model?: string | null;
-                /** @description Filter by OCR text content */
+                /**
+                 * @deprecated
+                 * @description Filter by OCR text content
+                 */
                 ocr?: string;
-                /** @description Filter by person IDs */
+                /**
+                 * @deprecated
+                 * @description Filter by person IDs
+                 */
                 personIds?: string[];
-                /** @description Filter by rating [1-5], or null for unrated */
+                /**
+                 * @deprecated
+                 * @description Filter by rating [1-5], or null for unrated
+                 */
                 rating?: number | null;
                 /** @description Number of results to return */
                 size?: number;
-                /** @description Filter by state/province name */
+                /**
+                 * @deprecated
+                 * @description Filter by state/province name
+                 */
                 state?: string | null;
-                /** @description Filter by tag IDs */
+                /**
+                 * @deprecated
+                 * @description Filter by tag IDs
+                 */
                 tagIds?: string[] | null;
-                /** @description Filter by taken date (after) */
+                /**
+                 * @deprecated
+                 * @description Filter by taken date (after)
+                 */
                 takenAfter?: string;
-                /** @description Filter by taken date (before) */
+                /**
+                 * @deprecated
+                 * @description Filter by taken date (before)
+                 */
                 takenBefore?: string;
-                /** @description Filter by trash date (after) */
+                /**
+                 * @deprecated
+                 * @description Filter by trash date (after)
+                 */
                 trashedAfter?: string;
-                /** @description Filter by trash date (before) */
+                /**
+                 * @deprecated
+                 * @description Filter by trash date (before)
+                 */
                 trashedBefore?: string;
+                /** @deprecated */
                 type?: components["schemas"]["AssetTypeEnum"];
-                /** @description Filter by update date (after) */
+                /**
+                 * @deprecated
+                 * @description Filter by update date (after)
+                 */
                 updatedAfter?: string;
-                /** @description Filter by update date (before) */
+                /**
+                 * @deprecated
+                 * @description Filter by update date (before)
+                 */
                 updatedBefore?: string;
+                /** @deprecated */
                 visibility?: components["schemas"]["AssetVisibility"];
-                /** @description Include deleted assets */
+                /**
+                 * @deprecated
+                 * @description Include deleted assets
+                 */
                 withDeleted?: boolean;
                 /** @description Include EXIF data in response */
                 withExif?: boolean;
@@ -12008,7 +13988,10 @@ export interface operations {
     };
     searchAssets: {
         parameters: {
-            query?: never;
+            query?: {
+                key?: string;
+                slug?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -13030,7 +15013,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["SystemConfigDto"];
+                    "application/json": components["schemas"]["AdminConfigDto"];
                 };
             };
         };
@@ -13044,7 +15027,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["SystemConfigDto"];
+                "application/json": components["schemas"]["AdminConfigDto"];
             };
         };
         responses: {
@@ -13053,7 +15036,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["SystemConfigDto"];
+                    "application/json": components["schemas"]["AdminConfigDto"];
                 };
             };
         };
@@ -13072,7 +15055,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["SystemConfigDto"];
+                    "application/json": components["schemas"]["AdminConfigDto"];
                 };
             };
         };
@@ -13914,6 +15897,8 @@ export interface operations {
                 enabled?: boolean;
                 /** @description Workflow ID */
                 id?: string;
+                /** @description Workflow logs run results */
+                logging?: boolean;
                 /** @description Workflow name */
                 name?: string;
                 /** @description Workflow trigger type */
@@ -14039,6 +16024,34 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    getWorkflowLogs: {
+        parameters: {
+            query?: {
+                /** @description Filter by runs before a date/time */
+                before?: string;
+                /** @description Maximum number of logs */
+                limit?: number;
+                /** @description Filter by run result */
+                result?: components["schemas"]["WorkflowResult"];
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkflowLogEntryDto"][];
+                };
             };
         };
     };
